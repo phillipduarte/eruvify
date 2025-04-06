@@ -31,10 +31,38 @@ body {
 
 /* Top Bar */
 .top-bar {
-  background-color: #FFFFFF;
-  padding: 16px;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  height: 50px;
+  display: flex;
+  align-items: flex-end;
+  gap: 59px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  gap: 60px;
+  padding-left: 20px;
+  padding-right: 10px;
+}
+
+.menu-icon,
+.notifications-icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
   text-align: center;
-  border-bottom: 1px solid #ccc;
+  flex-grow: 1; /* Ensures the title takes up remaining space */
 }
 
 /* Subheader Row */

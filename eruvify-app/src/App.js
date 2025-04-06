@@ -8,7 +8,11 @@ function App() {
       <div className="app-container">
         {/* Top Header */}
         <header className="top-bar">
-          <h1>Your Route Today</h1>
+          <div className="header-content">
+            <img src="/assets/hamburger-menu.png" alt="Menu" className="menu-icon" />
+            <h1 className="header-title">Your Route Today</h1>
+            <img src="/assets/notifications-icon.png" alt="Notifications" className="notifications-icon" />
+          </div>
         </header>
         
         {/* Subheader row */}
@@ -19,7 +23,6 @@ function App() {
         
         {/* Map placeholder */}
         <div className="map-container">
-          {/* Replace the src below with your actual map image path or a placeholder */}
           <img src="/map-placeholder.png" alt="Map placeholder" />
         </div>
         
