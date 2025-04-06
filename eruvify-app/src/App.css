@@ -65,24 +65,39 @@ body {
   flex-grow: 1; /* Ensures the title takes up remaining space */
 }
 
-/* Subheader Row */
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* Progress Section */
+.progress-section {
   padding: 16px;
   background-color: #FFFFFF;
 }
 
-.distance {
-  font-size: 1rem;
+.progress-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: inline-block;
 }
 
-.walkthrough-button {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  padding: 8px 12px;
-  cursor: pointer;
+.progress-bar-container {
+  position: relative;
+  background-color: #eee;
+  height: 12px;
+  border-radius: 6px;
+  margin: 4px 0 8px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background-color: #007bff;
+  height: 100%;
+  width: 0; /* set dynamically via inline style */
+  transition: width 0.3s ease;
+}
+
+.progress-range {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #555;
 }
 
 /* Map Container */
