@@ -4,8 +4,9 @@ import BottomNavigation from './BottomNavigation';
 import MenuOverlay from './components/MenuOverlay';
 
 function App() {
-  // Total distance for the demo (in miles)
-  const totalDistance = 0.9;
+  // Total distance for the demo (in miles).
+  // Updated to 0.7 to match the pre‑start text.
+  const totalDistance = 0.7;
 
   // Track if the menu is open
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,7 +44,7 @@ function App() {
     }
   }, [isStarted, isFinished, totalDistance]);
 
-  // Calculate progress percentage
+  // Calculate the progress percentage for the progress bar
   const progressPercent = (distanceWalked / totalDistance) * 100;
 
   // Restart everything
@@ -56,22 +57,28 @@ function App() {
   // Conditionally render the main content
   const renderContent = () => {
     if (!isStarted) {
-      // Pre-Start Screen
+      // PRE‑START SCREEN: Updated to match your design
       return (
         <div className="pre-start-content">
-          <div className="map-container">
-            <img src="/assets/map-placeholder.png" alt="Map placeholder" />
+          <h2 className="assignment-title">Your Assignment</h2>
+          <p className="assignment-distance">0.7 Miles</p>
+          <div className="prestart-map-container">
+            <img
+              src="/assets/map-placeholder-prestart.png"
+              alt="Map placeholder"
+            />
           </div>
-          <div className="bottom-buttons">
-            <button className="start-button" onClick={() => setIsStarted(true)}>
-              Start
-            </button>
-          </div>
+          <button className="start-button" onClick={() => setIsStarted(true)}>
+            Start
+          </button>
+          <button className="request-route-change-button">
+            Request route change
+          </button>
         </div>
       );
     } else if (isFinished) {
-      // End Screen (matches your screenshot)
-      return (
+       // End Screen (matches your screenshot)
+       return (
         <div className="end-content">
           {/* Great Job image (star + text) */}
           <div className="great-job-image">
@@ -113,8 +120,8 @@ function App() {
           </button>
         </div>
       );
-    } else {
-      // Started Screen: Show progress bar, map, etc.
+    }  else {
+      // STARTED SCREEN: Show progress bar, map, and updated buttons
       return (
         <div className="started-content">
           <div className="progress-section">
@@ -150,10 +157,9 @@ function App() {
   return (
     <div className="phone">
       <div className="app-container">
-        {/* Top Bar */}
+        {/* Top Header */}
         <header className="top-bar">
           <div className="header-content">
-            {/* If you don't want the hamburger icon here, remove it */}
             <img
               src="/assets/hamburger-menu.png"
               alt="Menu"
@@ -161,7 +167,7 @@ function App() {
               onClick={toggleMenu}
             />
             <h1 className="header-title">
-              {isFinished ? "Complete!" : "Your Route Today"}
+              {isFinished ? 'Trip Completed' : 'Your Route Today'}
             </h1>
             <img
               src="/assets/notifications-icon.png"
@@ -177,7 +183,7 @@ function App() {
         {/* Bottom Navigation */}
         <BottomNavigation />
 
-        {/* Overlay Menu */}
+        {/* Menu Overlay */}
         <MenuOverlay isOpen={isMenuOpen} onClose={toggleMenu} />
       </div>
     </div>
