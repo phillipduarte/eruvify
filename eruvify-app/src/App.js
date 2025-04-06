@@ -4,7 +4,7 @@ import BottomNavigation from './BottomNavigation';
 import MenuOverlay from './components/MenuOverlay';
 
 function App() {
-  // Total distance for the demo (in miles).
+  // Total distance for the demo (in miles)
   const totalDistance = 0.7;
 
   // Track if the menu is open
@@ -16,6 +16,9 @@ function App() {
   // Whether the route is finished
   const [isFinished, setIsFinished] = useState(false);
 
+  // Whether the report issue screen is active
+  const [isReporting, setIsReporting] = useState(false);
+
   // How far the user has walked
   const [distanceWalked, setDistanceWalked] = useState(0);
 
@@ -24,48 +27,49 @@ function App() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Simulate progress once the user starts and hasn't finished
+  // Simulate progress once the user starts and hasn't finished or entered report mode
   useEffect(() => {
-    if (isStarted && !isFinished) {
+    if (isStarted && !isFinished && !isReporting) {
       const interval = setInterval(() => {
         setDistanceWalked((prevDistance) => {
           const newDistance = prevDistance + 0.1; // Increment by 0.1 miles
           if (newDistance >= totalDistance) {
-            clearInterval(interval); // Stop the interval
+            clearInterval(interval);
             setTimeout(() => {
-              setIsFinished(true); // Wait 2 seconds before setting finished
-            }, 2000); // 2000ms = 2 seconds
+              setIsFinished(true);
+            }, 2000); // Wait 2 seconds before setting finished
             return totalDistance;
           }
           return newDistance;
         });
       }, 1000); // Update every second
 
-      return () => clearInterval(interval); // Cleanup on unmount or when `isStarted` changes
+      return () => clearInterval(interval);
     }
-  }, [isStarted, isFinished, totalDistance]);
+  }, [isStarted, isFinished, totalDistance, isReporting]);
 
-  // Calculate the progress percentage for the progress bar
+  // Calculate progress percentage
   const progressPercent = (distanceWalked / totalDistance) * 100;
-
-  // Determine the map placeholder based on progress
-  const getMapPlaceholder = () => {
-    if (distanceWalked >= totalDistance / 2 && distanceWalked < totalDistance * 0.9) {
-      return '/assets/map-placeholder-mid.png'; // 50% progress
-    } else if (distanceWalked >= totalDistance) {
-      return '/assets/map-placeholder-end.png'; // Completed
-    }
-    return '/assets/map-placeholder-started.png'; // Default (less than 50%)
-  };
 
   // Restart everything
   const handleRestart = () => {
     setIsStarted(false);
     setDistanceWalked(0);
     setIsFinished(false);
+    setIsReporting(false);
   };
 
-  // Conditionally render the main content
+  // Determine the map placeholder based on progress
+  const getMapPlaceholder = () => {
+    if (distanceWalked >= totalDistance / 2 && distanceWalked < totalDistance * 0.9) {
+      return '/assets/map-placeholder-mid.png';
+    } else if (distanceWalked >= totalDistance) {
+      return '/assets/map-placeholder-end.png';
+    }
+    return '/assets/map-placeholder-started.png';
+  };
+
+  // Render the main content based on the current state
   const renderContent = () => {
     if (!isStarted) {
       // PRE‑START SCREEN
@@ -74,10 +78,7 @@ function App() {
           <h2 className="assignment-title">Your Assignment</h2>
           <p className="assignment-distance">0.7 Miles</p>
           <div className="prestart-map-container">
-            <img
-              src="/assets/map-placeholder-prestart.png"
-              alt="Map placeholder"
-            />
+            <img src="/assets/map-placeholder-prestart.png" alt="Map placeholder" />
           </div>
           <button className="start-button" onClick={() => setIsStarted(true)}>
             Start
@@ -85,6 +86,51 @@ function App() {
           <button className="request-route-change-button">
             Request route change
           </button>
+        </div>
+      );
+    } else if (isReporting) {
+      // REPORT ISSUE SCREEN
+      return (
+        <div className="report-issue-content">
+          <div className="report-issue-header">
+            <button className="cancel-button" onClick={() => setIsReporting(false)}>
+              <img src="/assets/cancel-icon.png" alt="Cancel" className="cancel-icon" />
+            </button>
+            <div className="report-progress-container">
+              {/* If you want to include a small "Progress" label, uncomment the next line */}
+              <span className="progress-label">Progress</span> 
+              <div className="progress-bar-container">
+                <div
+                  className="progress-bar"
+                  style={{ width: `${progressPercent}%` }}
+                ></div>
+              </div>
+              <div className="progress-range">
+                <span>0.0 mi</span>
+                <span>{totalDistance} mi</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="report-issue-form">
+            {/* Placeholder image before the form */}
+            <div className="capture-placeholder-container">
+              <img
+                src="/assets/capture-placeholder.png"
+                alt="Capture placeholder"
+                className="capture-placeholder"
+              />
+            </div>
+
+            {/* Textarea for describing the issue */}
+            <textarea
+              className="report-textarea"
+              placeholder="Describe your issue here"
+            ></textarea>
+
+            {/* Submit button */}
+            <button className="submit-report-button">Submit Report</button>
+          </div>
         </div>
       );
     } else if (isFinished) {
@@ -126,10 +172,7 @@ function App() {
           <div className="progress-section">
             <label className="progress-label">Progress</label>
             <div className="progress-bar-container">
-              <div
-                className="progress-bar"
-                style={{ width: `${progressPercent}%` }}
-              ></div>
+              <div className="progress-bar" style={{ width: `${progressPercent}%` }}></div>
             </div>
             <div className="progress-range">
               <span>0.0 mi</span>
@@ -140,9 +183,11 @@ function App() {
             <img src={getMapPlaceholder()} alt="Map placeholder" />
           </div>
           <div className="bottom-buttons">
-            <button className="change-button">Request Change</button>
             <button className="pause-button" onClick={() => setIsStarted(false)}>
               Pause
+            </button>
+            <button className="report-issue-button" onClick={() => setIsReporting(true)}>
+              Report Issue
             </button>
           </div>
         </div>
@@ -153,6 +198,7 @@ function App() {
   return (
     <div className="phone">
       <div className="app-container">
+        {/* Top Header */}
         <header className="top-bar">
           <div className="header-content">
             <img
@@ -171,8 +217,14 @@ function App() {
             />
           </div>
         </header>
+
+        {/* Main Content */}
         {renderContent()}
+
+        {/* Bottom Navigation */}
         <BottomNavigation />
+
+        {/* Menu Overlay */}
         <MenuOverlay isOpen={isMenuOpen} onClose={toggleMenu} />
       </div>
     </div>
