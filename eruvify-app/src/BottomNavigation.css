@@ -2,12 +2,10 @@
     background-color: #ffffff;
     border-top: 1px solid #ddd;
     z-index: 1000;
-    bottom: 0;
+    position: absolute; /* Ensures it stays at the bottom of the container */
+    bottom: 0; /* Hugs the bottom */
     left: 0;
     right: 0;
-    background-color: #ffffff;
-    border-top: 1px solid #ddd;
-    z-index: 1000;
 }
   
 .nav-items {
