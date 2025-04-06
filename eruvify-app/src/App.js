@@ -5,7 +5,6 @@ import MenuOverlay from './components/MenuOverlay';
 
 function App() {
   // Total distance for the demo (in miles).
-  // Updated to 0.7 to match the pre‑start text.
   const totalDistance = 0.7;
 
   // Track if the menu is open
@@ -32,20 +31,32 @@ function App() {
         setDistanceWalked((prevDistance) => {
           const newDistance = prevDistance + 0.1; // Increment by 0.1 miles
           if (newDistance >= totalDistance) {
-            clearInterval(interval);
-            setIsFinished(true);
+            clearInterval(interval); // Stop the interval
+            setTimeout(() => {
+              setIsFinished(true); // Wait 2 seconds before setting finished
+            }, 2000); // 2000ms = 2 seconds
             return totalDistance;
           }
           return newDistance;
         });
       }, 1000); // Update every second
 
-      return () => clearInterval(interval);
+      return () => clearInterval(interval); // Cleanup on unmount or when `isStarted` changes
     }
   }, [isStarted, isFinished, totalDistance]);
 
   // Calculate the progress percentage for the progress bar
   const progressPercent = (distanceWalked / totalDistance) * 100;
+
+  // Determine the map placeholder based on progress
+  const getMapPlaceholder = () => {
+    if (distanceWalked >= totalDistance / 2 && distanceWalked < totalDistance * 0.9) {
+      return '/assets/map-placeholder-mid.png'; // 50% progress
+    } else if (distanceWalked >= totalDistance) {
+      return '/assets/map-placeholder-end.png'; // Completed
+    }
+    return '/assets/map-placeholder-started.png'; // Default (less than 50%)
+  };
 
   // Restart everything
   const handleRestart = () => {
@@ -57,7 +68,7 @@ function App() {
   // Conditionally render the main content
   const renderContent = () => {
     if (!isStarted) {
-      // PRE‑START SCREEN: Updated to match your design
+      // PRE‑START SCREEN
       return (
         <div className="pre-start-content">
           <h2 className="assignment-title">Your Assignment</h2>
@@ -77,10 +88,9 @@ function App() {
         </div>
       );
     } else if (isFinished) {
-       // End Screen (matches your screenshot)
-       return (
+      // END SCREEN
+      return (
         <div className="end-content">
-          {/* Great Job image (star + text) */}
           <div className="great-job-image">
             <img
               src="/assets/great-job-star.png"
@@ -88,20 +98,13 @@ function App() {
               className="great-job-img"
             />
           </div>
-
-          {/* Share label */}
           <h3 className="share-label">Share your check</h3>
-
-          {/* Text area for comments */}
           <textarea
             className="comment-box"
             placeholder="Write your comment here"
           />
-
-          {/* Upload button */}
           <div className="upload-container">
             <button className="upload-button">
-              {/* Optional icon, if you have one */}
               <img
                 src="/assets/upload-icon.png"
                 alt="Upload"
@@ -110,18 +113,14 @@ function App() {
               Upload image
             </button>
           </div>
-
-          {/* Post button */}
           <button className="post-button">Post</button>
-
-          {/* Optional "Restart" or "Close" logic */}
           <button className="restart-button" onClick={handleRestart}>
             Restart
           </button>
         </div>
       );
-    }  else {
-      // STARTED SCREEN: Show progress bar, map, and updated buttons
+    } else {
+      // STARTED SCREEN
       return (
         <div className="started-content">
           <div className="progress-section">
@@ -138,10 +137,7 @@ function App() {
             </div>
           </div>
           <div className="map-container">
-            <img
-              src="/assets/map-placeholder-started.png"
-              alt="Map placeholder"
-            />
+            <img src={getMapPlaceholder()} alt="Map placeholder" />
           </div>
           <div className="bottom-buttons">
             <button className="change-button">Request Change</button>
@@ -157,7 +153,6 @@ function App() {
   return (
     <div className="phone">
       <div className="app-container">
-        {/* Top Header */}
         <header className="top-bar">
           <div className="header-content">
             <img
@@ -176,14 +171,8 @@ function App() {
             />
           </div>
         </header>
-
-        {/* Main Content */}
         {renderContent()}
-
-        {/* Bottom Navigation */}
         <BottomNavigation />
-
-        {/* Menu Overlay */}
         <MenuOverlay isOpen={isMenuOpen} onClose={toggleMenu} />
       </div>
     </div>
