@@ -37,7 +37,7 @@
   height: 100vh;
   width: 280px; /* adjust as needed */
   
-  background-color: #fff;
+  background-color: #FAFAFA;
   box-shadow: 2px 0 6px rgba(0, 0, 0, 0.2);
   
   /* Start hidden off-screen */
@@ -54,19 +54,21 @@
 .menu-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 16px;
   border-bottom: 1px solid #ddd;
+  gap: 30px;
 }
 
 .menu-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 160px;
 }
 
 .menu-logo img {
-  height: 24px; /* adjust to your logo size */
+  height: auto; /* adjust to your logo size */
   width: auto;
 }
 
@@ -79,9 +81,10 @@
 .close-button {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 3.5rem;
   cursor: pointer;
   line-height: 1;
+
 }
 
 /* Menu items list */
@@ -105,7 +108,8 @@
 }
 
 .menu-items li img {
-  width: 24px;
-  height: 24px;
-  object-fit: cover;
+  width: auto; /* Allow the width to adjust automatically */
+  height: 32px; /* Keep the height fixed */
+  max-width: 100%; /* Ensure the image doesn't exceed the container's width */
+  object-fit: contain; /* Maintain the aspect ratio without cropping */
 }

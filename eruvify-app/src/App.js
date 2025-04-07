@@ -42,7 +42,7 @@ function App() {
           }
           return newDistance;
         });
-      }, 1000); // Update every second
+      }, 2000); // Update every second
 
       return () => clearInterval(interval);
     }

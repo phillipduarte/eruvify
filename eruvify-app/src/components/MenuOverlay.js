@@ -19,7 +19,6 @@ function MenuOverlay({ isOpen, onClose }) {
           {/* Logo + Title */}
           <div className="menu-logo">
             <img src="/assets/eruvify-logo.png" alt="Eruvify" />
-            <span>ERUVIFY</span>
           </div>
           {/* Close button (X) */}
           <button className="close-button" onClick={onClose}>
