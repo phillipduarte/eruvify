@@ -27,7 +27,10 @@ function BottomNavigation({ onNavSelect, currentScreen }) {
           <img src="/assets/messages-icon.png" alt="Messages" className="nav-icon" />
           {/* <span>Messages</span> */}
         </li>
-        <li className="nav-item">
+        <li 
+          className={`nav-item ${currentScreen === 'Profile' ? 'active' : ''}`}
+          onClick={() => onNavSelect('Profile')}
+        >
           <img src="/assets/profile-icon.png" alt="Profile" className="nav-icon" />
           {/* <span>Profile</span> */}
         </li>

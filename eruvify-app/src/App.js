@@ -25,6 +25,28 @@ const FeedScreen = () => {
   );
 };
 
+// A basic profile screen with dummy data
+const ProfileScreen = () => {
+  return (
+    <div className="profile-screen">
+      <div className="profile-header">
+        <img
+          src="/assets/profile-avatar.png"
+          alt="Profile Avatar"
+          className="profile-avatar"
+        />
+        <h2 className="profile-name">Jane Doe</h2>
+      </div>
+      <div className="profile-content">
+        <p className="profile-bio">
+          Hi, I'm Jane! I love hiking, walking, and spending time outdoors. Welcome to my profile.
+        </p>
+        <button className="edit-profile-button">Edit Profile</button>
+      </div>
+    </div>
+  );
+};  
+
 function App() {
   // We'll use currentScreen to switch between "Route" and "Feed" views.
   // Default is "Route" (the map-based flow).
@@ -99,6 +121,8 @@ function App() {
   const renderContent = () => {
     if (currentScreen === "Feed") {
       return <FeedScreen />;
+    } else if (currentScreen === "Profile") {
+      return <ProfileScreen />;
     } else if (currentScreen === "Route") {
       if (!isStarted) {
         // PRE‑START SCREEN
