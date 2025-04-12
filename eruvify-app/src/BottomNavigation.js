@@ -1,11 +1,14 @@
 import React from 'react';
 import './BottomNavigation.css';
 
-function BottomNavigation() {
+function BottomNavigation({ onNavSelect, currentScreen }) {
   return (
     <nav className="bottom-nav">
       <ul className="nav-items">
-        <li className="nav-item">
+        <li 
+          className={`nav-item ${currentScreen === 'Feed' ? 'active' : ''}`}
+          onClick={() => onNavSelect('Feed')}
+        >
           <img src="/assets/home-icon.png" alt="Home" className="nav-icon" />
           {/* <span>Home</span> */}
         </li>
@@ -13,7 +16,10 @@ function BottomNavigation() {
           <img src="/assets/map-icon.png" alt="Map" className="nav-icon" />
           {/* <span>Map</span> */}
         </li>
-        <li className="nav-item">
+        <li 
+          className={`nav-item ${currentScreen === 'Route' ? 'active' : ''}`}
+          onClick={() => onNavSelect('Route')}
+        >
           <img src="/assets/check-icon.png" alt="Check" className="nav-icon" />
           {/* <span>Check</span> */}
         </li>

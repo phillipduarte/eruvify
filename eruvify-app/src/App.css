@@ -415,3 +415,25 @@ body {
   border: 1px solid #ddd; /* Optional: Add a border */
   border-radius: 8px; /* Optional: Add rounded corners */
 }
+
+/* Feed Screen Styles */
+.feed-screen {
+  padding: 16px;
+  overflow-y: auto;
+  max-height: calc(100vh - 120px); /* Adjust based on your header/footer heights */
+}
+
+.feed-item {
+  border-bottom: 1px solid #ccc;
+  padding: 12px 0;
+}
+
+.feed-item-title {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.feed-item-content {
+  color: #555;
+  margin: 0;
+}
