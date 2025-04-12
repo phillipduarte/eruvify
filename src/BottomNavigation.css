@@ -1,0 +1,39 @@
+.bottom-nav {
+    background-color: #ffffff;
+    border-top: 1px solid #ddd;
+    z-index: 1000;
+    position: absolute; /* Ensures it stays at the bottom of the container */
+    bottom: 0; /* Hugs the bottom */
+    left: 0;
+    right: 0;
+}
+  
+.nav-items {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin: 0;
+    padding: 8px 0;
+    list-style: none;
+}
+
+.nav-item {
+    height: 30px;
+    width: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+}
+
+.nav-item.active {
+    opacity: 1;
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+}
