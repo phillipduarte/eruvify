@@ -5,6 +5,7 @@ import MenuOverlay from './components/MenuOverlay';
 import Home from './components/Home';
 import Profile from './components/Profile';
 import Map from './components/Map';
+import Messaging from './components/Messaging'; // Add this import
 
 function App() {
   // Total distance for the demo (in miles)
@@ -283,6 +284,8 @@ function App() {
           <Profile />
         ) : activeScreen === 'trip' ? (
           <Map />
+        ) : activeScreen === 'messages' ? (
+          <Messaging /> // Add this line
         ) : (
           renderContent()
         )}
