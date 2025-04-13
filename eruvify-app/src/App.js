@@ -40,6 +40,9 @@ function App() {
   // Add this state near your other state declarations
   const [reportText, setReportText] = useState('');
 
+  // Add this state near your other state declarations
+  const [hasStartedBefore, setHasStartedBefore] = useState(false);
+
   // Toggle the side menu
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -142,8 +145,14 @@ function App() {
           <div className="prestart-map-container">
             <img src="/assets/map-placeholder-prestart.png" alt="Map placeholder" />
           </div>
-          <button className="start-button" onClick={() => setIsStarted(true)}>
-            Start
+          <button 
+            className="start-button" 
+            onClick={() => {
+              setIsStarted(true);
+              setHasStartedBefore(true); // Mark that we've started before
+            }}
+          >
+            {hasStartedBefore ? 'Restart' : 'Start'}
           </button>
           <button 
             className="request-route-change-button" 
@@ -286,7 +295,10 @@ function App() {
             <img src={getMapPlaceholder()} alt="Map placeholder" />
           </div>
           <div className="bottom-buttons">
-            <button className="pause-button" onClick={() => setIsStarted(false)}>
+            <button className="pause-button" onClick={() => {
+              setIsStarted(false);
+              // Don't reset hasStartedBefore when pausing
+            }}>
               Pause
             </button>
             <button className="report-issue-button" onClick={() => setIsReporting(true)}>
