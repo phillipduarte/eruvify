@@ -37,6 +37,9 @@ function App() {
   const [comment, setComment] = useState('');
   const [uploadedImage, setUploadedImage] = useState(null);
 
+  // Add this state near your other state declarations
+  const [reportText, setReportText] = useState('');
+
   // Toggle the side menu
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -188,10 +191,37 @@ function App() {
             <textarea
               className="report-textarea"
               placeholder="Describe your issue here"
+              value={reportText}
+              onChange={(e) => setReportText(e.target.value)}
             ></textarea>
 
             {/* Submit button */}
-            <button className="submit-report-button">Submit Report</button>
+            <button 
+              className="submit-report-button" 
+              onClick={() => {
+                // Create a new alert post
+                const reportPost = {
+                  id: Date.now(),
+                  username: "Eruv Alert",
+                  comment: reportText || "Issue reported with the eruv in this area",
+                  time: new Date().toLocaleTimeString(),
+                  image: "/assets/capture-placeholder.png", // Use the placeholder image
+                  isAlert: true // Mark as an alert
+                };
+                
+                // Add to posts
+                setPosts([reportPost, ...posts]);
+                
+                // Reset the report state
+                setReportText('');
+                setIsReporting(false);
+                
+                // Switch to home screen to see the post
+                setActiveScreen('home');
+              }}
+            >
+              Submit Report
+            </button>
           </div>
         </div>
       );

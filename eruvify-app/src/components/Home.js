@@ -15,7 +15,8 @@ const Home = ({ posts = [] }) => {
       id: 'dummy-2',
       username: "Rabbi_David",
       comment: "Important community announcement: The eruv near Cedar Park has been repaired. Thanks to our volunteers!",
-      time: "5 hours ago"
+      time: "5 hours ago",
+      isAlert: true // Mark this post as an alert
     },
     {
       id: 'dummy-3',
@@ -29,6 +30,13 @@ const Home = ({ posts = [] }) => {
       username: "Rebecca_L",
       comment: "Question: Is anyone else having trouble viewing the map in the northwest section?",
       time: "2 days ago"
+    },
+    {
+      id: 'alert-1',
+      username: "Eruv Committee",
+      comment: "⚠️ ALERT: The eruv on Spruce Street is down due to construction. Please check status before Shabbat.",
+      time: "3 hours ago",
+      isAlert: true // Mark this post as an alert
     }
   ];
 
@@ -40,8 +48,14 @@ const Home = ({ posts = [] }) => {
     <div className="home-screen">
       <h2>Home</h2>
       {displayPosts.map((post) => (
-        <div key={post.id} className="post">
-          <div className="post-header">{post.username}</div>
+        <div 
+          key={post.id} 
+          className={`post ${post.isAlert ? 'alert-post' : ''}`}
+        >
+          <div className="post-header">
+            {post.isAlert && <span className="alert-indicator">ALERT</span>}
+            {post.username}
+          </div>
           {post.image && (
             <img src={post.image} alt="User post" className="post-image" />
           )}
