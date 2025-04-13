@@ -3,6 +3,7 @@ import './App.css';
 import BottomNavigation from './BottomNavigation';
 import MenuOverlay from './components/MenuOverlay';
 import Home from './components/Home';
+import Profile from './components/Profile';
 
 function App() {
   // Total distance for the demo (in miles)
@@ -277,6 +278,8 @@ function App() {
         {/* Main Content */}
         {activeScreen === 'home' ? (
           <Home posts={posts} />
+        ) : activeScreen === 'profile' ? (
+          <Profile />
         ) : (
           renderContent()
         )}

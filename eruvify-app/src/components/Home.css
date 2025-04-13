@@ -1,7 +1,21 @@
 .home-screen {
     padding: 1rem;
+    padding-bottom: 150px; /* Further increased padding for bottom content */
     font-family: sans-serif;
     text-align: center;
+    overflow-y: auto; /* Enable vertical scrolling */
+    position: relative; /* Establish positioning context */
+    height: calc(100vh - 60px); /* Set a defined height minus header if present */
+    max-height: 100vh; /* Ensure it doesn't exceed viewport height */
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    
+    /* Hide scrollbar for IE, Edge and Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
   
 .home-screen h2 {
@@ -52,4 +66,9 @@
 .post-time {
     font-size: 0.75rem;
     color: #888;
+}
+
+/* Ensure the last post has extra margin */
+.post:last-child {
+    margin-bottom: 2.5rem;
 }
