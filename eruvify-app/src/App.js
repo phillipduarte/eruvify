@@ -4,6 +4,7 @@ import BottomNavigation from './BottomNavigation';
 import MenuOverlay from './components/MenuOverlay';
 import Home from './components/Home';
 import Profile from './components/Profile';
+import Map from './components/Map';
 
 function App() {
   // Total distance for the demo (in miles)
@@ -25,7 +26,7 @@ function App() {
   const [distanceWalked, setDistanceWalked] = useState(0);
 
   // activeScreen: "trip" (for all screens related to the trip flow) or "home"
-  const [activeScreen, setActiveScreen] = useState('trip');
+  const [activeScreen, setActiveScreen] = useState('check');
 
   // Each post is an object with comment, image, dummy username, and time
   const [posts, setPosts] = useState([]);
@@ -280,6 +281,8 @@ function App() {
           <Home posts={posts} />
         ) : activeScreen === 'profile' ? (
           <Profile />
+        ) : activeScreen === 'trip' ? (
+          <Map />
         ) : (
           renderContent()
         )}
