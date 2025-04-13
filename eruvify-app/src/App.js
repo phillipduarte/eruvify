@@ -6,6 +6,7 @@ import Home from './components/Home';
 import Profile from './components/Profile';
 import Map from './components/Map';
 import Messaging from './components/Messaging'; // Add this import
+import RouteChangePopup from './components/RouteChangePopup';
 
 function App() {
   // Total distance for the demo (in miles)
@@ -117,6 +118,16 @@ function App() {
   setActiveScreen('home');
 };
 
+  // Add this state near your other state declarations
+  const [isRouteChangeOpen, setIsRouteChangeOpen] = useState(false);
+
+  // Add this handler function
+  const handleRouteChangeConfirm = () => {
+    // Here you would implement the actual route change request logic
+    alert("Your route change request has been submitted!");
+    setIsRouteChangeOpen(false);
+  };
+
   // Render the main content based on the current state
   const renderContent = () => {
     if (!isStarted) {
@@ -131,7 +142,10 @@ function App() {
           <button className="start-button" onClick={() => setIsStarted(true)}>
             Start
           </button>
-          <button className="request-route-change-button">
+          <button 
+            className="request-route-change-button" 
+            onClick={() => setIsRouteChangeOpen(true)}
+          >
             Request route change
           </button>
         </div>
@@ -295,6 +309,13 @@ function App() {
 
         {/* Menu Overlay */}
         <MenuOverlay isOpen={isMenuOpen} onClose={toggleMenu} />
+
+        {/* Route Change Popup */}
+        <RouteChangePopup 
+          isOpen={isRouteChangeOpen}
+          onClose={() => setIsRouteChangeOpen(false)}
+          onConfirm={handleRouteChangeConfirm}
+        />
       </div>
     </div>
   );
