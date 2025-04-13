@@ -1,10 +1,21 @@
 // MenuOverlay.js
-import React from 'react';
+import React, { useState } from 'react';
 import './MenuOverlay.css';
+import GuidePopup from './GuidePopup';
+import VerificationPopup from './VerificationPopup';
 
 function MenuOverlay({ isOpen, onClose }) {
-  // If not open, render nothing or keep hidden
-  // We'll handle it with CSS transitions so we can keep it in the DOM
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isVerificationOpen, setIsVerificationOpen] = useState(false);
+  
+  const handleGuideClick = () => {
+    setIsGuideOpen(true);
+  };
+  
+  const handleVerificationClick = () => {
+    setIsVerificationOpen(true);
+  };
+  
   return (
     <>
       {/* Background overlay with blur */}
@@ -28,11 +39,11 @@ function MenuOverlay({ isOpen, onClose }) {
         
         {/* Menu items */}
         <ul className="menu-items">
-          <li>
+          <li onClick={handleGuideClick}>
             <img src="/assets/book-icon.png" alt="Guides" />
             <span>Guides</span>
           </li>
-          <li>
+          <li onClick={handleVerificationClick}>
             <img src="/assets/check-icon.png" alt="Verification" />
             <span>Verification</span>
           </li>
@@ -42,6 +53,18 @@ function MenuOverlay({ isOpen, onClose }) {
           </li>
         </ul>
       </div>
+      
+      {/* Guide Popup */}
+      <GuidePopup 
+        isOpen={isGuideOpen} 
+        onClose={() => setIsGuideOpen(false)} 
+      />
+      
+      {/* Verification Popup */}
+      <VerificationPopup
+        isOpen={isVerificationOpen}
+        onClose={() => setIsVerificationOpen(false)}
+      />
     </>
   );
 }
