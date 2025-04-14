@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { useAppContext } from '@/hooks/useAppContext';
 import ProgressBar from '@/components/ui/ProgressBar';
@@ -18,9 +19,14 @@ export default function CheckScreen() {
     totalDistance,
     progressPercent,
     hasStartedBefore,
-    setHasStartedBefore
+    setHasStartedBefore,
+    isReporting,
+    setIsReporting
   } = useAppContext();
 
+  // Local state to track if we navigated away to report
+  const [navigatedToReport, setNavigatedToReport] = useState(false);
+  
   // Navigate to trip end screen when finished
   useEffect(() => {
     if (isFinished) {
@@ -28,6 +34,30 @@ export default function CheckScreen() {
     }
   }, [isFinished]);
   
+  // Use useFocusEffect instead of useEffect to properly handle focus changes
+  useFocusEffect(
+    useCallback(() => {
+      // When screen is focused and we had navigated to report
+      if (navigatedToReport) {
+        console.log("Resetting reporting state after return from report screen");
+        setIsReporting(false);
+        setNavigatedToReport(false);
+      }
+      
+      // Cleanup function when component loses focus
+      return () => {
+        // Any cleanup if needed
+      };
+    }, [navigatedToReport, setIsReporting])
+  );
+  
+  // Handle reporting issue - set state and navigate
+  const handleReportIssue = () => {
+    setIsReporting(true);
+    setNavigatedToReport(true);
+    router.push('/report-issue');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Your Route Today</Text>
@@ -105,7 +135,7 @@ export default function CheckScreen() {
             <Button 
               title="Report Issue"
               variant="danger"
-              onPress={() => router.push('/report-issue')}
+              onPress={handleReportIssue} // Use our new handler instead
               style={styles.reportButton}
             />
           </View>
@@ -133,6 +163,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     padding: Theme.spacing.lg,
+    paddingBottom: Theme.layout.tabBarHeight + Theme.spacing.md, // Added bottom padding for tab bar
   },
   assignmentTitle: {
     fontSize: Theme.typography.fontSize.xxl,
@@ -167,6 +198,7 @@ const styles = StyleSheet.create({
   inProgressContainer: {
     flex: 1,
     padding: Theme.spacing.lg,
+    paddingBottom: Theme.layout.tabBarHeight + Theme.spacing.md, // Added bottom padding for tab bar
   },
   progressSection: {
     marginBottom: Theme.spacing.lg,
@@ -209,6 +241,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 'auto', // Push buttons to bottom of available space
+    marginBottom: Theme.spacing.md, // Extra margin at bottom
   },
   pauseButton: {
     flex: 1,
