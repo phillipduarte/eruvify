@@ -19,6 +19,13 @@ export default function HomeScreen() {
       image: "https://images.unsplash.com/photo-1519817650390-64a93db51149?q=80&w=2576&auto=format&fit=crop"
     },
     {
+      id: 'alert-6',
+      username: "Eruv_Committee",
+      comment: "⚠️ URGENT ALERT: Due to fallen trees from last night's storm, sections of the eruv along Chestnut Street are down. Status: NOT KOSHER for this Shabbat in affected areas.",
+      time: "5 hours ago",
+      isAlert: true
+    },
+    {
       id: 'dummy-2',
       username: "Rabbi_David",
       comment: "Important community announcement: The eruv near Cedar Park has been repaired. Thanks to our volunteers!",
@@ -90,6 +97,27 @@ export default function HomeScreen() {
       username: "Community_Leader",
       comment: "Fundraising update: We've reached 80% of our goal for the new eruv maintenance fund! Thank you to all who have contributed.",
       time: "3 days ago"
+    },
+    {
+      id: 'alert-3',
+      username: "University_Facilities",
+      comment: "⚠️ ALERT: Major construction on Walnut Street will impact the eruv poles next week. Inspections scheduled for Thursday.",
+      time: "1 hour ago",
+      isAlert: true
+    },
+    {
+      id: 'alert-4',
+      username: "Eruv_Inspector",
+      comment: "⚠️ ALERT: Damage found to the northwestern section of the eruv boundary. Temporary repairs in place, but please verify before Shabbat.",
+      time: "8 hours ago",
+      isAlert: true
+    },
+    {
+      id: 'alert-5',
+      username: "Rabbi_Weinstein",
+      comment: "⚠️ ALERT: The eruv in the Market Street area has been damaged by recent utility work. Repair team has been notified, expected fixed by Friday morning.",
+      time: "1 day ago",
+      isAlert: true
     }
   ];
 
