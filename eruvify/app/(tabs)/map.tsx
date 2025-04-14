@@ -30,10 +30,10 @@ export default function MapScreen() {
   
   // Philadelphia coordinates
   const initialRegion: Region = {
-    latitude: 39.9526,
-    longitude: -75.1652,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
+    latitude: 39.9550,
+    longitude: -75.1930,
+    latitudeDelta: 0.035, // More zoomed in
+    longitudeDelta: 0.035,
   };
 
   // Example locations of eruv boundaries
@@ -58,26 +58,35 @@ export default function MapScreen() {
     },
   ];
 
-  // Example eruv boundary polygons
+  // Update these polygon coordinates for a more accurate representation
   const eruvPolygons: EruvPolygon[] = [
-    {
-      id: 1,
-      name: "Center City Eruv",
-      coordinates: [
-        { latitude: 39.9626, longitude: -75.1752 },
-        { latitude: 39.9626, longitude: -75.1552 },
-        { latitude: 39.9426, longitude: -75.1552 },
-        { latitude: 39.9426, longitude: -75.1752 },
-      ]
-    },
     {
       id: 2,
       name: "University City Eruv",
       coordinates: [
-        { latitude: 39.9778, longitude: -75.2039 },
-        { latitude: 39.9778, longitude: -75.1839 },
-        { latitude: 39.9578, longitude: -75.1839 },
-        { latitude: 39.9578, longitude: -75.2039 },
+        // Much smaller University City boundary
+        { latitude: 39.9620, longitude: -75.1970 }, // Northwest corner
+        { latitude: 39.9620, longitude: -75.1820 }, // Northeast corner
+        { latitude: 39.9560, longitude: -75.1800 }, // East side
+        { latitude: 39.9490, longitude: -75.1830 }, // Southeast corner
+        { latitude: 39.9480, longitude: -75.1910 }, // South point
+        { latitude: 39.9500, longitude: -75.1960 }, // Southwest corner
+        { latitude: 39.9560, longitude: -75.1980 }, // West side
+        { latitude: 39.9620, longitude: -75.1970 }, // Back to northwest
+      ]
+    },
+    {
+      id: 3,
+      name: "Penn Campus Extension",
+      coordinates: [
+        // Even smaller Penn Campus area
+        { latitude: 39.9510, longitude: -75.1890 }, // Northwest corner
+        { latitude: 39.9510, longitude: -75.1850 }, // Northeast corner
+        { latitude: 39.9495, longitude: -75.1840 }, // East side
+        { latitude: 39.9485, longitude: -75.1850 }, // Southeast corner
+        { latitude: 39.9485, longitude: -75.1880 }, // South side
+        { latitude: 39.9495, longitude: -75.1890 }, // Southwest corner
+        { latitude: 39.9510, longitude: -75.1890 }, // Back to northwest
       ]
     }
   ];
@@ -129,8 +138,9 @@ export default function MapScreen() {
             <Polyline
               key={polygon.id}
               coordinates={polygon.coordinates}
-              strokeColor={Theme.colors.primary}
-              strokeWidth={3}
+              strokeColor={polygon.id === 3 ? '#e91e63' : '#0056a8'} // Deeper blue to match image
+              strokeWidth={4} // Thicker line to be more visible
+              closed
             />
           ))}
         </MapView>
@@ -150,12 +160,12 @@ export default function MapScreen() {
         
         <View style={styles.legend}>
           <View style={styles.legendRow}>
-            <View style={[styles.legendMarker, { backgroundColor: Theme.colors.primary }]} />
+            <View style={[styles.legendMarker, { backgroundColor: '#0056a8' }]} />
             <Text style={styles.legendText}>Eruv Boundary</Text>
           </View>
           <View style={styles.legendRow}>
-            <View style={[styles.legendMarker, { backgroundColor: 'red' }]} />
-            <Text style={styles.legendText}>Reported Issue</Text>
+            <View style={[styles.legendMarker, { backgroundColor: '#e91e63' }]} />
+            <Text style={styles.legendText}>Penn Campus Extension</Text>
           </View>
         </View>
       </View>
