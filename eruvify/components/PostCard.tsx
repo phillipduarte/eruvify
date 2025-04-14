@@ -15,7 +15,7 @@ export default function PostCard({ post }: PostCardProps) {
     <Card 
       style={{
         ...styles.container,
-        ...(isAlert ? styles.alertContainer : {})
+        ...(isAlert ? styles.alertContainer : styles.regularContainer)
       }}
       variant="elevated"
     >
@@ -45,6 +45,10 @@ export default function PostCard({ post }: PostCardProps) {
 const styles = StyleSheet.create({
   container: {
     marginBottom: Theme.spacing.md,
+  },
+  regularContainer: {
+    borderWidth: 1,
+    borderColor: Theme.colors.gray[300],
   },
   alertContainer: {
     backgroundColor: Theme.colors.alertBackground,

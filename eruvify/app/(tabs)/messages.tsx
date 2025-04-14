@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, Image } from 'react-native';
+import { 
+  StyleSheet, 
+  View, 
+  Text, 
+  FlatList, 
+  TextInput, 
+  TouchableOpacity, 
+  Image,
+  KeyboardAvoidingView,
+  Platform
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
 import Theme from '@/constants/Theme';
@@ -108,77 +118,87 @@ export default function MessagesScreen() {
   if (selectedConversation) {
     // Chat view for selected conversation
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.chatHeader}>
-          <TouchableOpacity 
-            style={styles.backButton} 
-            onPress={() => setSelectedConversation(null)}
-          >
-            <FontAwesome name="arrow-left" size={20} color={Theme.colors.text} />
-          </TouchableOpacity>
-          
-          <View style={styles.chatHeaderInfo}>
-            <Text style={styles.chatName}>{selectedConversation.name}</Text>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <KeyboardAvoidingView 
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        >
+          <View style={styles.chatHeader}>
+            <TouchableOpacity 
+              style={styles.backButton} 
+              onPress={() => setSelectedConversation(null)}
+              hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+            >
+              <View style={styles.backButtonInner}>
+                <FontAwesome name="arrow-left" size={22} color={Theme.colors.primary} />
+                <Text style={styles.backButtonText}>Back</Text>
+              </View>
+            </TouchableOpacity>
+            
+            <View style={styles.chatHeaderInfo}>
+              <Text style={styles.chatName}>{selectedConversation.name}</Text>
+            </View>
+            
+            <TouchableOpacity style={styles.infoButton}>
+              <FontAwesome name="info-circle" size={20} color={Theme.colors.primary} />
+            </TouchableOpacity>
           </View>
           
-          <TouchableOpacity style={styles.infoButton}>
-            <FontAwesome name="info-circle" size={20} color={Theme.colors.primary} />
-          </TouchableOpacity>
-        </View>
-        
-        <FlatList
-          data={messages}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.messagesContainer}
-          inverted={false}
-          renderItem={({ item }) => (
-            <View style={[
-              styles.messageContainer,
-              item.received ? styles.receivedContainer : styles.sentContainer
-            ]}>
+          <FlatList
+            data={messages}
+            keyExtractor={item => item.id}
+            contentContainerStyle={styles.messagesContainer}
+            inverted={false}
+            renderItem={({ item }) => (
               <View style={[
-                styles.messageBubble,
-                item.received ? styles.receivedBubble : styles.sentBubble
+                styles.messageContainer,
+                item.received ? styles.receivedContainer : styles.sentContainer
               ]}>
-                <Text style={[
-                  styles.messageText,
-                  item.received ? styles.receivedText : styles.sentText
+                <View style={[
+                  styles.messageBubble,
+                  item.received ? styles.receivedBubble : styles.sentBubble
                 ]}>
-                  {item.text}
-                </Text>
+                  <Text style={[
+                    styles.messageText,
+                    item.received ? styles.receivedText : styles.sentText
+                  ]}>
+                    {item.text}
+                  </Text>
+                </View>
+                <Text style={styles.messageTime}>{item.time}</Text>
               </View>
-              <Text style={styles.messageTime}>{item.time}</Text>
-            </View>
-          )}
-        />
-        
-        <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.attachButton}>
-            <FontAwesome name="paperclip" size={20} color={Theme.colors.gray[500]} />
-          </TouchableOpacity>
-          
-          <TextInput
-            style={styles.input}
-            value={messageInput}
-            onChangeText={setMessageInput}
-            placeholder="Type a message..."
+            )}
           />
           
-          <TouchableOpacity 
-            style={[
-              styles.sendButton,
-              !messageInput.trim() && styles.sendButtonDisabled
-            ]}
-            onPress={handleSendMessage}
-            disabled={!messageInput.trim()}
-          >
-            <FontAwesome 
-              name="send" 
-              size={20} 
-              color={messageInput.trim() ? Theme.colors.white : Theme.colors.gray[400]} 
+          <View style={[styles.inputContainer, { paddingBottom: Platform.OS === 'ios' ? Theme.spacing.md + 20 : Theme.spacing.md }]}>
+            <TouchableOpacity style={styles.attachButton}>
+              <FontAwesome name="paperclip" size={20} color={Theme.colors.gray[500]} />
+            </TouchableOpacity>
+            
+            <TextInput
+              style={styles.input}
+              value={messageInput}
+              onChangeText={setMessageInput}
+              placeholder="Type a message..."
             />
-          </TouchableOpacity>
-        </View>
+            
+            <TouchableOpacity 
+              style={[
+                styles.sendButton,
+                !messageInput.trim() && styles.sendButtonDisabled
+              ]}
+              onPress={handleSendMessage}
+              disabled={!messageInput.trim()}
+            >
+              <FontAwesome 
+                name="send" 
+                size={20} 
+                color={messageInput.trim() ? Theme.colors.white : Theme.colors.gray[400]} 
+              />
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }
@@ -341,10 +361,23 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: Theme.spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backButtonInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backButtonText: {
+    marginLeft: 5,
+    fontSize: Theme.typography.fontSize.sm,
+    color: Theme.colors.primary,
+    fontWeight: '500',
   },
   chatHeaderInfo: {
     flex: 1,
     alignItems: 'center',
+    marginLeft: -45, // To keep the title centered despite the back button
   },
   chatName: {
     fontSize: Theme.typography.fontSize.md,
@@ -355,7 +388,7 @@ const styles = StyleSheet.create({
   },
   messagesContainer: {
     padding: Theme.spacing.md,
-    paddingBottom: Theme.layout.tabBarHeight + 80, // Space for input
+    paddingBottom: 90, // Adjusted padding to account for input bar
   },
   messageContainer: {
     marginBottom: Theme.spacing.md,
@@ -401,6 +434,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Theme.colors.border,
     backgroundColor: Theme.colors.white,
+    // Add bottom margin to avoid tab bar
+    marginBottom: Theme.layout.tabBarHeight,
   },
   attachButton: {
     marginRight: Theme.spacing.sm,

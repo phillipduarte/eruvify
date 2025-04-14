@@ -56,6 +56,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <FontAwesome name="user" size={24} color={color} />,
         }}
       />
+      {/* Remove the explore tab from here if it exists */}
     </Tabs>
   );
 }

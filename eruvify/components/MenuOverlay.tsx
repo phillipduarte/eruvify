@@ -10,15 +10,17 @@ import {
   Modal 
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import type { ComponentProps } from 'react';
 import { router } from 'expo-router';
 import { useAppContext } from '@/hooks/useAppContext';
 import Theme from '@/constants/Theme';
 
 const { width } = Dimensions.get('window');
 const MENU_WIDTH = width * 0.8;
+
+type FontAwesomeIconName = React.ComponentProps<typeof FontAwesome>['name'];
+
 interface MenuItemProps {
-  icon: ComponentProps<typeof FontAwesome>['name'];
+  icon: FontAwesomeIconName;
   label: string;
   route: string;
   onPress: () => void;
@@ -39,11 +41,14 @@ const MenuItem = ({ icon, label, route, onPress }: MenuItemProps) => (
 
 export default function MenuOverlay() {
   const { isMenuOpen, toggleMenu } = useAppContext();
+  // Changed to start offscreen from the left side
   const slideAnim = React.useRef(new Animated.Value(-MENU_WIDTH)).current;
 
   // Animate the menu in and out
   React.useEffect(() => {
     Animated.timing(slideAnim, {
+      // When open, position at 0 (left side of screen)
+      // When closed, move offscreen to the left (-MENU_WIDTH)
       toValue: isMenuOpen ? 0 : -MENU_WIDTH,
       duration: 300,
       useNativeDriver: true,
@@ -166,18 +171,19 @@ export default function MenuOverlay() {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    flexDirection: 'row',
   },
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   menuContainer: {
+    position: 'absolute',
+    left: 0, // Changed from right: 0 to left: 0
     width: MENU_WIDTH,
     backgroundColor: Theme.colors.white,
     height: '100%',
     shadowColor: '#000',
-    shadowOffset: { width: 2, height: 0 },
+    shadowOffset: { width: 2, height: 0 }, // Changed from -2 to 2 (shadow on right)
     shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 5,
