@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '@/hooks/useAppContext';
 import PostCard from '@/components/PostCard';
@@ -7,6 +7,7 @@ import Theme from '@/constants/Theme';
 
 export default function HomeScreen() {
   const { posts } = useAppContext();
+  const [activeTab, setActiveTab] = useState(0); // 0 = Alerts, 1 = All Posts
   
   // Dummy posts data as fallback
   const dummyPosts = [
@@ -92,8 +93,12 @@ export default function HomeScreen() {
     }
   ];
 
-  // Combine user posts with dummy posts - user posts appear first
-  const displayPosts = [...posts, ...dummyPosts];
+  // Combine user posts with dummy posts
+  const allPosts = [...posts, ...dummyPosts];
+  
+  // Split posts into alerts and regular posts
+  const alertPosts = allPosts.filter(post => post.isAlert === true);
+  const regularPosts = allPosts.filter(post => !post.isAlert);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -101,20 +106,63 @@ export default function HomeScreen() {
         <Text style={styles.title}>Home</Text>
       </View>
       
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {displayPosts.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No posts yet. Check back later!</Text>
-          </View>
-        ) : (
-          displayPosts.map(post => (
-            <PostCard key={post.id.toString()} post={post} />
-          ))
-        )}
-      </ScrollView>
+      {/* Tab Navigation */}
+      <View style={styles.tabContainer}>
+        <TouchableOpacity 
+          style={[styles.tabButton, activeTab === 0 && styles.activeTabButton]} 
+          onPress={() => setActiveTab(0)}
+        >
+          <Text style={[styles.tabText, activeTab === 0 && styles.activeTabText]}>
+            Alerts ({alertPosts.length})
+          </Text>
+          {activeTab === 0 && <View style={styles.activeTabIndicator} />}
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={[styles.tabButton, activeTab === 1 && styles.activeTabButton]} 
+          onPress={() => setActiveTab(1)}
+        >
+          <Text style={[styles.tabText, activeTab === 1 && styles.activeTabText]}>
+            Posts ({regularPosts.length})
+          </Text>
+          {activeTab === 1 && <View style={styles.activeTabIndicator} />}
+        </TouchableOpacity>
+      </View>
+      
+      {/* Content based on active tab */}
+      {activeTab === 0 ? (
+        <ScrollView 
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {alertPosts.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>No alerts at this time</Text>
+            </View>
+          ) : (
+            alertPosts.map(post => (
+              <PostCard key={post.id} post={post} />
+            ))
+          )}
+        </ScrollView>
+      ) : (
+        <ScrollView 
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {regularPosts.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>No posts yet. Check back later!</Text>
+            </View>
+          ) : (
+            regularPosts.map(post => (
+              <PostCard key={post.id} post={post} />
+            ))
+          )}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -135,15 +183,49 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: Theme.colors.text,
   },
+  tabContainer: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.colors.border,
+  },
+  tabButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: Theme.spacing.sm,
+    position: 'relative',
+  },
+  activeTabButton: {
+    backgroundColor: Theme.colors.background,
+  },
+  tabText: {
+    fontSize: Theme.typography.fontSize.md,
+    fontWeight: '500',
+    color: Theme.colors.gray[500],
+  },
+  activeTabText: {
+    color: Theme.colors.primary,
+    fontWeight: 'bold',
+  },
+  activeTabIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    height: 3,
+    width: '50%',
+    backgroundColor: Theme.colors.primary,
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
+  },
+  scrollView: {
+    flex: 1,
+  },
   scrollContent: {
     padding: Theme.spacing.md,
     paddingBottom: Theme.layout.tabBarHeight + Theme.spacing.lg,
   },
   emptyState: {
-    flex: 1,
+    paddingVertical: 100,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: Theme.spacing.xxxl,
   },
   emptyStateText: {
     fontSize: Theme.typography.fontSize.md,
