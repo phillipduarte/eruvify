@@ -43,6 +43,52 @@ export default function HomeScreen() {
       comment: "⚠️ ALERT: The eruv on Spruce Street is down due to construction. Please check status before Shabbat.",
       time: "3 hours ago",
       isAlert: true
+    },
+    // New dummy posts
+    {
+      id: 'dummy-5',
+      username: "DavidCohen",
+      comment: "Found a potential issue with the eruv wire near 34th Street. I've reported it in the app - can someone from the committee verify?",
+      time: "6 hours ago"
+    },
+    {
+      id: 'dummy-6',
+      username: "Penn_Hillel",
+      comment: "Reminder: Eruv walking tour this Sunday at 2pm! Great for newcomers who want to understand the boundaries.",
+      time: "10 hours ago",
+      image: "https://images.unsplash.com/photo-1541599540903-216a46ca1dc0?q=80&w=2070&auto=format&fit=crop"
+    },
+    {
+      id: 'dummy-7',
+      username: "Rabbi_Goldstein",
+      comment: "Community update: We're planning to extend the University City eruv next month to include more student housing. Volunteers needed for surveying!",
+      time: "1 day ago"
+    },
+    {
+      id: 'alert-2',
+      username: "Eruv_Watch",
+      comment: "⚠️ Weather Alert: Strong winds predicted for Saturday. Extra eruv checks will be performed Friday afternoon.",
+      time: "4 hours ago",
+      isAlert: true
+    },
+    {
+      id: 'dummy-8',
+      username: "Leah_S",
+      comment: "Thank you to whoever fixed the broken wire on Walnut Street so quickly! Shabbat shalom to all.",
+      time: "1 day ago"
+    },
+    {
+      id: 'dummy-9',
+      username: "EthanM",
+      comment: "I just used the new eruv reporting feature - super easy and helpful! Great update to the app.",
+      time: "2 days ago",
+      image: "https://images.unsplash.com/photo-1512428559087-560fa5ceab42?q=80&w=2070&auto=format&fit=crop"
+    },
+    {
+      id: 'dummy-10',
+      username: "Community_Leader",
+      comment: "Fundraising update: We've reached 80% of our goal for the new eruv maintenance fund! Thank you to all who have contributed.",
+      time: "3 days ago"
     }
   ];
 
