@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE, Region } from 'react-native-maps';
+import MapView, { Marker, Polyline, Region } from 'react-native-maps';
 import { FontAwesome } from '@expo/vector-icons';
 import Theme from '@/constants/Theme';
 import Card from '@/components/ui/Card';
@@ -110,7 +110,6 @@ export default function MapScreen() {
         <MapView
           ref={mapRef}
           style={styles.map}
-          provider={PROVIDER_GOOGLE}
           initialRegion={initialRegion}
           mapType={mapType}
           showsUserLocation
