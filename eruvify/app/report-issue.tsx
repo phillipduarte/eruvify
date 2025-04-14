@@ -1,9 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, Alert, Modal, Platform } from 'react-native';
+import { 
+  StyleSheet, 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  Image, 
+  Alert, 
+  Modal, 
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
-import { Camera } from 'expo-camera'; // Import Camera and CameraType
+import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { useAppContext } from '@/hooks/useAppContext';
@@ -188,6 +200,11 @@ export default function ReportIssueScreen() {
     ));
   };
 
+  // Add a keyboard dismiss handler
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Camera Modal */}
@@ -241,72 +258,77 @@ export default function ReportIssueScreen() {
         </SafeAreaView>
       </Modal>
 
-      {/* Main Report Issue UI */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={() => {
-            try {
-              router.back();
-            } catch (e) {
-              router.replace('/(tabs)');
-            }
-          }}
-        >
-          <FontAwesome name="times" size={24} color="#333" />
-        </TouchableOpacity>
+      {/* Main Report Issue UI - Now wrapped with TouchableWithoutFeedback */}
+      <TouchableWithoutFeedback onPress={dismissKeyboard}>
+        <View style={styles.mainContainer}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={() => {
+                try {
+                  router.back();
+                } catch (e) {
+                  router.replace('/(tabs)');
+                }
+              }}
+            >
+              <FontAwesome name="times" size={24} color="#333" />
+            </TouchableOpacity>
 
-        <View style={styles.progressContainer}>
-          <Text style={styles.progressLabel}>Progress</Text>
-          <ProgressBar progress={progressPercent} />
-          <View style={styles.progressRange}>
-            <Text style={styles.rangeText}>0.0 mi</Text>
-            <Text style={styles.rangeText}>{totalDistance} mi</Text>
+            <View style={styles.progressContainer}>
+              <Text style={styles.progressLabel}>Progress</Text>
+              <ProgressBar progress={progressPercent} />
+              <View style={styles.progressRange}>
+                <Text style={styles.rangeText}>0.0 mi</Text>
+                <Text style={styles.rangeText}>{totalDistance} mi</Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.content}>
+            {/* Image Display Area */}
+            {image ? (
+              <View style={styles.imageContainer}>
+                <Image
+                  source={{ uri: image }}
+                  style={styles.capturedImage}
+                />
+                <TouchableOpacity
+                  style={styles.changeImageButton}
+                  onPress={showImageOptions}
+                >
+                  <FontAwesome name="camera" size={20} color="#fff" />
+                  <Text style={styles.changeImageText}>Change</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.imagePlaceholder}
+                onPress={showImageOptions}
+              >
+                <FontAwesome name="camera" size={40} color="#999" />
+                <Text style={styles.placeholderText}>Tap to add image</Text>
+              </TouchableOpacity>
+            )}
+
+            <TextInput
+              style={styles.textInput}
+              placeholder="Describe the issue here..."
+              value={reportText}
+              onChangeText={setReportText}
+              multiline
+              textAlignVertical="top"
+              blurOnSubmit={true} // Helps with keyboard dismissal on submit
+            />
+
+            <Button
+              title="Submit Report"
+              variant="primary"
+              onPress={handleSubmit}
+            />
           </View>
         </View>
-      </View>
-
-      <View style={styles.content}>
-        {/* Image Display Area */}
-        {image ? (
-          <View style={styles.imageContainer}>
-            <Image
-              source={{ uri: image }}
-              style={styles.capturedImage}
-            />
-            <TouchableOpacity
-              style={styles.changeImageButton}
-              onPress={showImageOptions}
-            >
-              <FontAwesome name="camera" size={20} color="#fff" />
-              <Text style={styles.changeImageText}>Change</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity
-            style={styles.imagePlaceholder}
-            onPress={showImageOptions}
-          >
-            <FontAwesome name="camera" size={40} color="#999" />
-            <Text style={styles.placeholderText}>Tap to add image</Text>
-          </TouchableOpacity>
-        )}
-
-        <TextInput
-          style={styles.textInput}
-          placeholder="Describe the issue here..."
-          value={reportText}
-          onChangeText={setReportText}
-          multiline
-          textAlignVertical="top"
-        />
-
-        <Button
-          title="Submit Report"
-          variant="primary"
-          onPress={handleSubmit}
-        />
-      </View>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 }
@@ -460,5 +482,8 @@ const styles = StyleSheet.create({
     color: 'white',
     marginBottom: 20,
     textAlign: 'center',
+  },
+  mainContainer: {
+    flex: 1,
   },
 });
