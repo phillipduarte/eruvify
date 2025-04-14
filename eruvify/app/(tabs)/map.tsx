@@ -114,127 +114,151 @@ export default function MapScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.mapContainer}>
-        <MapView
-          ref={mapRef}
-          style={styles.map}
-          initialRegion={initialRegion}
-          mapType={mapType}
-          showsUserLocation
-          showsMyLocationButton
-        >
-          {eruvMarkers.map((marker) => (
-            <Marker
-              key={marker.id}
-              coordinate={marker.latlng}
-              title={marker.title}
-              description={marker.description}
-              onPress={() => setSelectedEruv(marker)}
-            />
-          ))}
-          
-          {eruvPolygons.map((polygon) => (
-            <Polyline
-              key={polygon.id}
-              coordinates={polygon.coordinates}
-              strokeColor={polygon.id === 3 ? '#e91e63' : '#0056a8'} // Deeper blue to match image
-              strokeWidth={4} // Thicker line to be more visible
-              closed
-            />
-          ))}
-        </MapView>
-        
-        <View style={styles.mapControls}>
-          <TouchableOpacity 
-            style={styles.mapTypeButton}
-            onPress={toggleMapType}
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Map</Text>
+      </View>
+      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer}>
+        <View style={styles.mapContainer}>
+          <MapView
+            ref={mapRef}
+            style={styles.map}
+            initialRegion={initialRegion}
+            mapType={mapType}
+            showsUserLocation
+            showsMyLocationButton
           >
-            <FontAwesome 
-              name={mapType === 'standard' ? 'map' : 'map-o'} 
-              size={24} 
-              color={Theme.colors.text} 
-            />
-          </TouchableOpacity>
+            {eruvMarkers.map((marker) => (
+              <Marker
+                key={marker.id}
+                coordinate={marker.latlng}
+                title={marker.title}
+                description={marker.description}
+                onPress={() => setSelectedEruv(marker)}
+              />
+            ))}
+            
+            {eruvPolygons.map((polygon) => (
+              <Polyline
+                key={polygon.id}
+                coordinates={polygon.coordinates}
+                strokeColor={polygon.id === 3 ? '#e91e63' : '#0056a8'}
+                strokeWidth={4}
+                closed
+              />
+            ))}
+          </MapView>
+          
+          <View style={styles.mapControls}>
+            <TouchableOpacity 
+              style={styles.mapTypeButton}
+              onPress={toggleMapType}
+            >
+              <FontAwesome 
+                name={mapType === 'standard' ? 'map' : 'map-o'} 
+                size={24} 
+                color={Theme.colors.text} 
+              />
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.legend}>
+            <View style={styles.legendRow}>
+              <View style={[styles.legendMarker, { backgroundColor: '#0056a8' }]} />
+              <Text style={styles.legendText}>Eruv Boundary</Text>
+            </View>
+            <View style={styles.legendRow}>
+              <View style={[styles.legendMarker, { backgroundColor: '#e91e63' }]} />
+              <Text style={styles.legendText}>Penn Campus Extension</Text>
+            </View>
+          </View>
         </View>
         
-        <View style={styles.legend}>
-          <View style={styles.legendRow}>
-            <View style={[styles.legendMarker, { backgroundColor: '#0056a8' }]} />
-            <Text style={styles.legendText}>Eruv Boundary</Text>
-          </View>
-          <View style={styles.legendRow}>
-            <View style={[styles.legendMarker, { backgroundColor: '#e91e63' }]} />
-            <Text style={styles.legendText}>Penn Campus Extension</Text>
-          </View>
-        </View>
-      </View>
-      
-      {selectedEruv && (
-        <Card style={styles.eruvInfoCard} variant="elevated">
-          <View style={styles.eruvInfoHeader}>
-            <Text style={styles.eruvInfoTitle}>{selectedEruv.title}</Text>
-            <TouchableOpacity onPress={() => setSelectedEruv(null)}>
-              <FontAwesome name="times" size={20} color={Theme.colors.gray[600]} />
-            </TouchableOpacity>
-          </View>
-          
-          <Text style={styles.eruvInfoDescription}>
-            {selectedEruv.description || 'No additional information available'}
-          </Text>
-          
-          <View style={styles.eruvInfoActions}>
-            <TouchableOpacity style={styles.eruvInfoButton}>
-              <FontAwesome name="location-arrow" size={16} color={Theme.colors.primary} />
-              <Text style={styles.eruvInfoButtonText}>Directions</Text>
-            </TouchableOpacity>
+        {selectedEruv && (
+          <Card style={styles.eruvInfoCard} variant="elevated">
+            <View style={styles.eruvInfoHeader}>
+              <Text style={styles.eruvInfoTitle}>{selectedEruv.title}</Text>
+              <TouchableOpacity onPress={() => setSelectedEruv(null)}>
+                <FontAwesome name="times" size={20} color={Theme.colors.gray[600]} />
+              </TouchableOpacity>
+            </View>
             
-            <TouchableOpacity style={styles.eruvInfoButton}>
-              <FontAwesome name="info-circle" size={16} color={Theme.colors.primary} />
-              <Text style={styles.eruvInfoButtonText}>More Info</Text>
-            </TouchableOpacity>
-          </View>
-        </Card>
-      )}
-      
-      <View style={styles.eruvList}>
-        <Text style={styles.eruvListTitle}>Nearby Eruvs</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {eruvMarkers.map((eruv) => (
-            <TouchableOpacity 
-              key={eruv.id} 
-              style={[
-                styles.eruvListItem,
-                selectedEruv?.id === eruv.id && styles.eruvListItemActive
-              ]}
-              onPress={() => centerOnEruv(eruv)}
-            >
-              <Text 
+            <Text style={styles.eruvInfoDescription}>
+              {selectedEruv.description || 'No additional information available'}
+            </Text>
+            
+            <View style={styles.eruvInfoActions}>
+              <TouchableOpacity style={styles.eruvInfoButton}>
+                <FontAwesome name="location-arrow" size={16} color={Theme.colors.primary} />
+                <Text style={styles.eruvInfoButtonText}>Directions</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.eruvInfoButton}>
+                <FontAwesome name="info-circle" size={16} color={Theme.colors.primary} />
+                <Text style={styles.eruvInfoButtonText}>More Info</Text>
+              </TouchableOpacity>
+            </View>
+          </Card>
+        )}
+        
+        <View style={styles.eruvList}>
+          <Text style={styles.eruvListTitle}>Nearby Eruvs</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {eruvMarkers.map((eruv) => (
+              <TouchableOpacity 
+                key={eruv.id} 
                 style={[
-                  styles.eruvListItemText,
-                  selectedEruv?.id === eruv.id && styles.eruvListItemTextActive
+                  styles.eruvListItem,
+                  selectedEruv?.id === eruv.id && styles.eruvListItemActive
                 ]}
+                onPress={() => centerOnEruv(eruv)}
               >
-                {eruv.title}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+                <Text 
+                  style={[
+                    styles.eruvListItemText,
+                    selectedEruv?.id === eruv.id && styles.eruvListItemTextActive
+                  ]}
+                >
+                  {eruv.title}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: Theme.colors.background,
   },
-  mapContainer: {
+  header: {
+    paddingVertical: Theme.spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.colors.border,
+  },
+  title: {
+    fontSize: Theme.typography.fontSize.xl,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: Theme.colors.text,
+  },
+  scrollContainer: {
     flex: 1,
+  },
+  contentContainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
+  mapContainer: {
+    height: 400, // Fixed height for map instead of flex: 1
     borderRadius: Theme.sizes.borderRadius.md,
     overflow: 'hidden',
     margin: Theme.spacing.md,
+    position: 'relative',
   },
   map: {
     width: '100%',
