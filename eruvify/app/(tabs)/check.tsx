@@ -25,6 +25,7 @@ export default function CheckScreen() {
     isFinished,
     setIsFinished,
     distanceWalked,
+    setDistanceWalked,
     totalDistance,
     progressPercent,
     hasStartedBefore,
@@ -66,6 +67,121 @@ export default function CheckScreen() {
     longitudeDelta: 0.015,
   });
   
+  // Add these near your other state variables
+  const [completedCoordinates, setCompletedCoordinates] = useState([]);
+  const [remainingCoordinates, setRemainingCoordinates] = useState(routeCoordinates);
+
+  // Helper function to calculate distance between two coordinates
+  const calculateDistance = (coord1, coord2) => {
+    const R = 6371e3; // Earth's radius in meters
+    const lat1 = coord1.latitude * Math.PI / 180;
+    const lat2 = coord2.latitude * Math.PI / 180;
+    const deltaLat = (coord2.latitude - coord1.latitude) * Math.PI / 180;
+    const deltaLon = (coord2.longitude - coord1.longitude) * Math.PI / 180;
+  
+    const a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) +
+            Math.cos(lat1) * Math.cos(lat2) *
+            Math.sin(deltaLon/2) * Math.sin(deltaLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const distance = R * c; // distance in meters
+  
+    return distance;
+  };
+  
+  // Function to calculate the closest point on a line segment
+  const findClosestPointOnSegment = (userCoord, segmentStart, segmentEnd) => {
+    // Convert to simpler variables for readability
+    const x = userCoord.longitude;
+    const y = userCoord.latitude;
+    const x1 = segmentStart.longitude;
+    const y1 = segmentStart.latitude;
+    const x2 = segmentEnd.longitude;
+    const y2 = segmentEnd.latitude;
+  
+    // Calculate the segment length squared
+    const segmentLengthSq = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
+    
+    if (segmentLengthSq === 0) {
+      // Return the start point if segment is a point
+      return { latitude: y1, longitude: x1 };
+    }
+    
+    // Calculate projection
+    const t = ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / segmentLengthSq;
+    
+    // Clamp to segment
+    const tClamped = Math.max(0, Math.min(1, t));
+    
+    // Calculate the closest point
+    return {
+      latitude: y1 + tClamped * (y2 - y1),
+      longitude: x1 + tClamped * (x2 - x1)
+    };
+  };
+  
+  // Function to update route progress based on user location
+  const updateRouteProgress = (userCoord) => {
+    if (!userCoord || routeCoordinates.length < 2) return;
+  
+    // Find which segment of the route the user is closest to
+    let minDistance = Infinity;
+    let closestSegmentIndex = 0;
+    let closestPoint = null;
+  
+    for (let i = 0; i < routeCoordinates.length - 1; i++) {
+      const segmentStart = routeCoordinates[i];
+      const segmentEnd = routeCoordinates[i+1];
+      const pointOnSegment = findClosestPointOnSegment(userCoord, segmentStart, segmentEnd);
+      
+      const distance = calculateDistance(userCoord, pointOnSegment);
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestSegmentIndex = i;
+        closestPoint = pointOnSegment;
+      }
+    }
+  
+    // If user is very close to the route (within 50 meters)
+    if (minDistance < 50) {
+      // Calculate progress along the route
+      let totalRouteDistance = 0;
+      let completedDistance = 0;
+  
+      // Calculate total route distance
+      for (let i = 0; i < routeCoordinates.length - 1; i++) {
+        totalRouteDistance += calculateDistance(routeCoordinates[i], routeCoordinates[i+1]);
+        
+        if (i < closestSegmentIndex) {
+          completedDistance += calculateDistance(routeCoordinates[i], routeCoordinates[i+1]);
+        }
+      }
+  
+      // Add distance from start of current segment to closest point
+      if (closestPoint) {
+        completedDistance += calculateDistance(routeCoordinates[closestSegmentIndex], closestPoint);
+      }
+  
+      // Calculate completion percentage
+      const newProgressPercent = Math.min(100, (completedDistance / totalRouteDistance) * 100);
+      
+      // Update application state
+      const progressDistanceWalked = (totalDistance * newProgressPercent) / 100;
+      setDistanceWalked(progressDistanceWalked);
+      
+      // Split coordinates into completed and remaining
+      const completed = [...routeCoordinates.slice(0, closestSegmentIndex + 1)];
+      if (closestPoint) {
+        completed.push(closestPoint);
+      }
+      
+      const remaining = [closestPoint, ...routeCoordinates.slice(closestSegmentIndex + 1)];
+      
+      setCompletedCoordinates(completed);
+      setRemainingCoordinates(remaining);
+    }
+  };
+
   // Request location permissions and get initial location
   useEffect(() => {
     (async () => {
@@ -116,8 +232,8 @@ export default function CheckScreen() {
                 }, 500);
               }
               
-              // Here you could also update the distanceWalked
-              // by calculating distance between points
+              // Update route progress
+              updateRouteProgress(coords);
             }
           );
           
@@ -162,6 +278,8 @@ export default function CheckScreen() {
   const handleStart = () => {
     setIsStarted(true);
     setHasStartedBefore(true);
+    setCompletedCoordinates([]);
+    setRemainingCoordinates(routeCoordinates);
     centerMapOnUser();
   };
   
@@ -212,13 +330,35 @@ export default function CheckScreen() {
           followsUserLocation={isStarted}
           onMapReady={() => console.log("Map is ready")}
         >
-          {/* Draw the route path */}
-          <Polyline
-            coordinates={routeCoordinates}
-            strokeColor="#3B82F6" // Blue color
-            strokeWidth={4}
-            lineDashPattern={[0]}
-          />
+          {/* Draw the completed part of the route */}
+          {isStarted && completedCoordinates.length > 1 && (
+            <Polyline
+              coordinates={completedCoordinates}
+              strokeColor="#000000" // Black color for completed
+              strokeWidth={6}
+              lineDashPattern={[0]}
+              zIndex={2} // Higher z-index to show above remaining route
+            />
+          )}
+          
+          {/* Draw the remaining part of the route */}
+          {isStarted && remainingCoordinates.length > 1 ? (
+            <Polyline
+              coordinates={remainingCoordinates}
+              strokeColor="#3B82F6" // Blue color for remaining
+              strokeWidth={4}
+              lineDashPattern={[0]}
+              zIndex={1}
+            />
+          ) : (
+            // Show the full route when not started
+            <Polyline
+              coordinates={routeCoordinates}
+              strokeColor="#3B82F6" // Blue color
+              strokeWidth={4}
+              lineDashPattern={[0]}
+            />
+          )}
           
           {/* Mark start point */}
           <Marker
