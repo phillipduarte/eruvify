@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -8,7 +8,8 @@ import {
   Image, 
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -27,24 +28,104 @@ export default function TripEndScreen() {
     handlePostSubmit
   } = useAppContext();
 
+  // Check permissions when component mounts
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== 'web') {
+        const { status: libraryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
+        
+        if (libraryStatus !== 'granted' && cameraStatus !== 'granted') {
+          Alert.alert(
+            'Permissions Required',
+            'This app needs camera and photo library permissions to function properly.',
+            [{ text: 'OK' }]
+          );
+        }
+      }
+    })();
+  }, []);
+
+  // Function to pick an image from the library
   const pickImage = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    // Request permission again just to be sure
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
-    if (permissionResult.granted === false) {
-      alert('Permission to access camera roll is required!');
+    if (status !== 'granted') {
+      Alert.alert(
+        'Permission Denied',
+        'Sorry, we need photo library permissions to make this work!',
+        [
+          { text: 'Cancel' },
+          { 
+            text: 'Open Settings', 
+            onPress: () => {
+              Alert.alert('Please open Settings app and enable permissions for this app.');
+            }
+          }
+        ]
+      );
       return;
     }
     
-    const result = await ImagePicker.launchImageLibraryAsync({
+    // Launch the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
     
-    if (!result.canceled) {
+    if (!result.canceled && result.assets && result.assets.length > 0) {
       setUploadedImage(result.assets[0].uri);
     }
+  };
+  
+  // Function to take a photo with the camera
+  const takePhoto = async () => {
+    // Request camera permission
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    
+    if (status !== 'granted') {
+      Alert.alert(
+        'Permission Denied',
+        'Sorry, we need camera permissions to make this work!',
+        [
+          { text: 'Cancel' },
+          { 
+            text: 'Open Settings', 
+            onPress: () => {
+              Alert.alert('Please open Settings app and enable camera permissions for this app.');
+            }
+          }
+        ]
+      );
+      return;
+    }
+    
+    // Launch the camera
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setUploadedImage(result.assets[0].uri);
+    }
+  };
+  
+  // Show image option dialog
+  const showImageOptions = () => {
+    Alert.alert(
+      'Add Image',
+      'Choose an option to add an image:',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Take Photo', onPress: takePhoto },
+        { text: 'Choose from Library', onPress: pickImage }
+      ]
+    );
   };
   
   const onSubmit = () => {
@@ -89,7 +170,7 @@ export default function TripEndScreen() {
             {uploadedImage ? (
               <TouchableOpacity 
                 style={styles.imagePreviewContainer}
-                onPress={pickImage}
+                onPress={showImageOptions}
               >
                 <Image 
                   source={{ uri: uploadedImage }} 
@@ -103,7 +184,7 @@ export default function TripEndScreen() {
             ) : (
               <TouchableOpacity 
                 style={styles.uploadButton}
-                onPress={pickImage}
+                onPress={showImageOptions}
               >
                 <FontAwesome name="camera" size={30} color={Theme.colors.gray[500]} />
                 <Text style={styles.uploadText}>Tap to upload an image</Text>
