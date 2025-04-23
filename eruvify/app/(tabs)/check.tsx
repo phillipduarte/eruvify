@@ -28,6 +28,7 @@ export default function CheckScreen() {
     setDistanceWalked,
     totalDistance,
     progressPercent,
+    setProgressPercent, // Add this line to get the setter
     hasStartedBefore,
     setHasStartedBefore,
     isReporting,
@@ -70,6 +71,9 @@ export default function CheckScreen() {
   // Add these near your other state variables
   const [completedCoordinates, setCompletedCoordinates] = useState([]);
   const [remainingCoordinates, setRemainingCoordinates] = useState(routeCoordinates);
+
+  // Add this near your other state variables
+  const [localProgressPercent, setLocalProgressPercent] = useState(0);
 
   // Helper function to calculate distance between two coordinates
   const calculateDistance = (coord1, coord2) => {
@@ -164,8 +168,16 @@ export default function CheckScreen() {
   
       // Calculate completion percentage
       const newProgressPercent = Math.min(100, (completedDistance / totalRouteDistance) * 100);
+
+      // Check if setProgressPercent is a function before using it
+      if (typeof setProgressPercent === 'function') {
+        setProgressPercent(newProgressPercent);
+      } else {
+        setLocalProgressPercent(newProgressPercent);
+        console.warn('setProgressPercent not available in context');
+      }
       
-      // Update application state
+      // Update distance walked based on the total assigned distance
       const progressDistanceWalked = (totalDistance * newProgressPercent) / 100;
       setDistanceWalked(progressDistanceWalked);
       
@@ -179,6 +191,12 @@ export default function CheckScreen() {
       
       setCompletedCoordinates(completed);
       setRemainingCoordinates(remaining);
+
+      // Check if the route is nearly complete (95% or more)
+      if (newProgressPercent >= 95 && !isFinished) {
+        // Mark the route as finished
+        setIsFinished(true);
+      }
     }
   };
 
@@ -278,6 +296,15 @@ export default function CheckScreen() {
   const handleStart = () => {
     setIsStarted(true);
     setHasStartedBefore(true);
+    
+    // Reset progress using available method
+    if (typeof setProgressPercent === 'function') {
+      setProgressPercent(0);
+    } else {
+      setLocalProgressPercent(0);
+    }
+    
+    setDistanceWalked(0);  // Reset distance walked
     setCompletedCoordinates([]);
     setRemainingCoordinates(routeCoordinates);
     centerMapOnUser();
@@ -417,7 +444,7 @@ export default function CheckScreen() {
         <View style={styles.inProgressContainer}>
           <View style={styles.progressSection}>
             <Text style={styles.progressLabel}>Progress</Text>
-            <ProgressBar progress={progressPercent} />
+            <ProgressBar progress={typeof progressPercent === 'number' ? progressPercent : localProgressPercent} />
             <View style={styles.progressRange}>
               <Text style={styles.rangeText}>0.0 mi</Text>
               <Text style={styles.rangeText}>{totalDistance} mi</Text>

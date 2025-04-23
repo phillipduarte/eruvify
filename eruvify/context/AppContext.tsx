@@ -26,6 +26,7 @@ interface AppContextType {
   setDistanceWalked: (distance: number) => void;
   totalDistance: number;
   progressPercent: number;
+  setProgressPercent: (percent: number) => void; // Add setter type
   
   // Report issue state
   isReporting: boolean;
@@ -84,6 +85,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // How far the user has walked
   const [distanceWalked, setDistanceWalked] = useState(0);
+  
+  // Add state for progress percentage
+  const [progressPercent, setProgressPercent] = useState(0);
 
   // Active screen state
   const [activeScreen, setActiveScreen] = useState('check');
@@ -104,9 +108,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Route change popup state
   const [isRouteChangeOpen, setIsRouteChangeOpen] = useState(false);
 
-  // Calculate progress percentage
-  const progressPercent = (distanceWalked / totalDistance) * 100;
-
   // Toggle the side menu
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -121,6 +122,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const handleRestart = () => {
     setIsStarted(false);
     setDistanceWalked(0);
+    setProgressPercent(0); // Reset progress percent
     setIsFinished(false);
     setIsReporting(false);
   };
@@ -168,27 +170,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return 'start';
   };
 
-  // Simulate progress once the user starts and hasn't finished or entered report mode
-  useEffect(() => {
-    if (isStarted && !isFinished && !isReporting) {
-      const interval = setInterval(() => {
-        setDistanceWalked((prevDistance) => {
-          const newDistance = prevDistance + 0.1; // Increment by 0.1 miles
-          if (newDistance >= totalDistance) {
-            clearInterval(interval);
-            setTimeout(() => {
-              setIsFinished(true);
-            }, 2000); // Wait 2 seconds before setting finished
-            return totalDistance;
-          }
-          return newDistance;
-        });
-      }, 2000); // Update every 2 seconds
-
-      return () => clearInterval(interval);
-    }
-  }, [isStarted, isFinished, isReporting, totalDistance]);
-
   // Combine all our state and functions into the context value
   const contextValue: AppContextType = {
     activeScreen,
@@ -201,6 +182,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setDistanceWalked,
     totalDistance,
     progressPercent,
+    setProgressPercent, // Provide the setter function
     isReporting,
     setIsReporting,
     reportText,
