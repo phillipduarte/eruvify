@@ -42,17 +42,26 @@ export default function CheckScreen() {
   const [mapReady, setMapReady] = useState(false);
   
   // Define the route coordinates
+  // Original route coordinates (commented out for later use)
+  // const routeCoordinates = [
+  //   { latitude: 39.962043, longitude: -75.199447 },
+  //   { latitude: 39.963169, longitude: -75.199657 },
+  //   { latitude: 39.964476, longitude: -75.187672 },
+  // ];
+  
+  // Updated route coordinates
   const routeCoordinates = [
-    { latitude: 39.962043, longitude: -75.199447 },
-    { latitude: 39.963169, longitude: -75.199657 },
-    { latitude: 39.964476, longitude: -75.187672 },
+    { latitude: 39.951622, longitude: -75.201554 },
+    { latitude: 39.951326, longitude: -75.199328 },
   ];
   
   // Set initial region based on route
   const [initialRegion, setInitialRegion] = useState({
     // Center point of the route
-    latitude: 39.963229,  // Average of route latitudes
-    longitude: -75.195592, // Average of route longitudes
+    // latitude: 39.963229,  // Average of original route latitudes
+    // longitude: -75.195592, // Average of original route longitudes
+    latitude: 39.951474,  // Average of new route latitudes
+    longitude: -75.200441, // Average of new route longitudes
     latitudeDelta: 0.015,
     longitudeDelta: 0.015,
   });
