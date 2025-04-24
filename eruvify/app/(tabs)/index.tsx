@@ -4,10 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppContext } from '@/hooks/useAppContext';
 import PostCard from '@/components/PostCard';
 import Theme from '@/constants/Theme';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function HomeScreen() {
   const { posts } = useAppContext();
   const [activeTab, setActiveTab] = useState(0); // 0 = Alerts, 1 = All Posts
+  const [alertFilter, setAlertFilter] = useState('all');
   
   // Dummy posts data as fallback
   const dummyPosts = [
@@ -15,22 +17,35 @@ export default function HomeScreen() {
       id: 'dummy-2',
       username: "Rabbi_David",
       comment: "Important community announcement: The eruv near Cedar Park has been repaired. Thanks to our volunteers!",
-      time: "20 minuets ago",
-      isAlert: true
+      time: "20 minutes ago",
+      isAlert: true,
+      alertType: 'repair',
+      likes: 12,
+      comments: [
+        {
+          id: 'c1',
+          username: 'Sarah_M',
+          text: 'Thank you for the quick repair!',
+          timestamp: '10 minutes ago'
+        }
+      ]
     },
     {
       id: 'dummy-1',
       username: "Sarah_J",
       comment: "Just checked my eruv using the app - all clear for this Shabbat!",
-      time: "1 hours ago",
-      image: "https://images.unsplash.com/photo-1519817650390-64a93db51149?q=80&w=2576&auto=format&fit=crop"
+      time: "1 hour ago",
+      image: "https://images.unsplash.com/photo-1519817650390-64a93db51149?q=80&w=2576&auto=format&fit=crop",
+      likes: 8,
+      comments: []
     },
     {
       id: 'alert-6',
       username: "Eruv_Committee",
       comment: "⚠️ URGENT ALERT: Due to fallen trees from last night's storm, sections of the eruv along Chestnut Street are down. Status: NOT KOSHER for this Shabbat in affected areas.",
       time: "2 hours ago",
-      isAlert: true
+      isAlert: true,
+      alertType: 'weather',
     },
     {
       id: 'dummy-4',
@@ -43,7 +58,8 @@ export default function HomeScreen() {
       username: "Eruv Committee",
       comment: "⚠️ ALERT: The eruv on Spruce Street is down due to construction. Please check status before Shabbat.",
       time: "3 hours ago",
-      isAlert: true
+      isAlert: true,
+      alertType: 'breakage',
     },
     // New dummy posts
     {
@@ -70,7 +86,8 @@ export default function HomeScreen() {
       username: "Eruv_Watch",
       comment: "⚠️ Weather Alert: Strong winds predicted for Saturday. Extra eruv checks will be performed Friday afternoon.",
       time: "6 hours ago",
-      isAlert: true
+      isAlert: true,
+      alertType: 'weather',
     },
     {
       id: 'dummy-8',
@@ -90,21 +107,24 @@ export default function HomeScreen() {
       username: "University_Facilities",
       comment: "⚠️ ALERT: Major construction on Walnut Street will impact the eruv poles next week. Inspections scheduled for Thursday.",
       time: "1 day ago",
-      isAlert: true
+      isAlert: true,
+      alertType: 'general',
     },
     {
       id: 'alert-4',
       username: "Eruv_Inspector",
       comment: "⚠️ ALERT: Damage found to the northwestern section of the eruv boundary. Temporary repairs in place, but please verify before Shabbat.",
       time: "2 days ago",
-      isAlert: true
+      isAlert: true,
+      alertType: 'breakage',
     },
     {
       id: 'alert-5',
       username: "Rabbi_Weinstein",
       comment: "⚠️ ALERT: The eruv in the Market Street area has been damaged by recent utility work. Repair team has been notified, expected fixed by Friday morning.",
       time: "3 day ago",
-      isAlert: true
+      isAlert: true,
+      alertType: 'breakage',
     },
     {
       id: 'dummy-3',
@@ -127,6 +147,15 @@ export default function HomeScreen() {
   // Split posts into alerts and regular posts
   const alertPosts = allPosts.filter(post => post.isAlert === true);
   const regularPosts = allPosts.filter(post => !post.isAlert);
+
+  // Filter alerts based on selected filter
+  const getFilteredAlerts = () => {
+    if (alertFilter === 'all') return alertPosts;
+    return alertPosts.filter(post => post.alertType === alertFilter);
+  };
+
+  // Get filtered alerts
+  const filteredAlerts = getFilteredAlerts();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -159,21 +188,62 @@ export default function HomeScreen() {
       
       {/* Content based on active tab */}
       {activeTab === 0 ? (
-        <ScrollView 
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {alertPosts.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>No alerts at this time</Text>
-            </View>
-          ) : (
-            alertPosts.map(post => (
-              <PostCard key={post.id} post={post} />
-            ))
-          )}
-        </ScrollView>
+        <>
+          <View style={styles.filterContainer}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <TouchableOpacity 
+                style={[styles.filterButton, alertFilter === 'all' && styles.activeFilter]} 
+                onPress={() => setAlertFilter('all')}
+              >
+                <Text style={[styles.filterText, alertFilter === 'all' && styles.activeFilterText]}>All</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.filterButton, alertFilter === 'weather' && styles.activeFilter]} 
+                onPress={() => setAlertFilter('weather')}
+              >
+                <Ionicons name="thunderstorm" size={16} color={alertFilter === 'weather' ? Theme.colors.white : Theme.colors.gray[600]} />
+                <Text style={[styles.filterText, alertFilter === 'weather' && styles.activeFilterText]}>Weather</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.filterButton, alertFilter === 'breakage' && styles.activeFilter]} 
+                onPress={() => setAlertFilter('breakage')}
+              >
+                <Ionicons name="alert-circle" size={16} color={alertFilter === 'breakage' ? Theme.colors.white : Theme.colors.gray[600]} />
+                <Text style={[styles.filterText, alertFilter === 'breakage' && styles.activeFilterText]}>Breakage</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.filterButton, alertFilter === 'repair' && styles.activeFilter]} 
+                onPress={() => setAlertFilter('repair')}
+              >
+                <Ionicons name="construct" size={16} color={alertFilter === 'repair' ? Theme.colors.white : Theme.colors.gray[600]} />
+                <Text style={[styles.filterText, alertFilter === 'repair' && styles.activeFilterText]}>Repairs</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.filterButton, alertFilter === 'general' && styles.activeFilter]} 
+                onPress={() => setAlertFilter('general')}
+              >
+                <Ionicons name="information-circle" size={16} color={alertFilter === 'general' ? Theme.colors.white : Theme.colors.gray[600]} />
+                <Text style={[styles.filterText, alertFilter === 'general' && styles.activeFilterText]}>General</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+          
+          <ScrollView 
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {filteredAlerts.length === 0 ? (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyStateText}>No {alertFilter !== 'all' ? alertFilter : ''} alerts at this time</Text>
+              </View>
+            ) : (
+              filteredAlerts.map(post => (
+                <PostCard key={post.id} post={post} />
+              ))
+            )}
+          </ScrollView>
+        </>
       ) : (
         <ScrollView 
           style={styles.scrollView}
@@ -259,5 +329,32 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.fontSize.md,
     color: Theme.colors.gray[500],
     textAlign: 'center',
+  },
+  filterContainer: {
+    paddingVertical: 8,
+    paddingHorizontal: Theme.spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.colors.border,
+  },
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginRight: 8,
+    backgroundColor: Theme.colors.gray[200],
+  },
+  activeFilter: {
+    backgroundColor: Theme.colors.primary,
+  },
+  filterText: {
+    fontSize: 14,
+    marginLeft: 4,
+    color: Theme.colors.gray[600],
+  },
+  activeFilterText: {
+    color: Theme.colors.white,
+    fontWeight: '600',
   },
 });
