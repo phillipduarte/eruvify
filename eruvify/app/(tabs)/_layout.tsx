@@ -5,6 +5,7 @@ import { Feather, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
+import Theme from '@/constants/Theme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -13,7 +14,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: themeColors.tint,
+        tabBarActiveTintColor: Theme.colors.primary, // Use the primary blue from Theme
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
