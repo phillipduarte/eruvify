@@ -14,6 +14,8 @@ import Theme from '@/constants/Theme';
 interface Comment {
   id: string;
   username: string;
+  fullName?: string;
+  profilePicture?: string;
   text: string;
   timestamp: string;
 }
@@ -21,6 +23,8 @@ interface Comment {
 interface Post {
   id: string;
   username: string;
+  fullName?: string;
+  profilePicture?: string;
   comment: string;
   time: string;
   image?: string;
@@ -59,6 +63,7 @@ export default function PostCard({ post }: PostCardProps) {
     const comment: Comment = {
       id: Date.now().toString(),
       username: 'CurrentUser', // In a real app, get this from auth
+      fullName: 'Current User', // In a real app, get this from auth
       text: newComment,
       timestamp: 'Just now'
     };
@@ -114,11 +119,25 @@ export default function PostCard({ post }: PostCardProps) {
     ]}>
       <View style={styles.cardHeader}>
         <View style={styles.userInfo}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{post.username.charAt(0)}</Text>
-          </View>
-          <View style={styles.userInfoText}>
-            <Text style={styles.username}>{post.username}</Text>
+          {/* Profile picture - show image if available, otherwise fallback to initials */}
+          {post.profilePicture ? (
+            <Image 
+              source={{ uri: post.profilePicture }} 
+              style={styles.avatar} 
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.avatarFallback}>
+              <Text style={styles.avatarText}>{post.username.charAt(0)}</Text>
+            </View>
+          )}
+          
+          <View>
+            {/* Now show both full name and username */}
+            {post.fullName && (
+              <Text style={styles.fullName}>{post.fullName}</Text>
+            )}
+            <Text style={styles.username}>@{post.username}</Text>
             <Text style={styles.timestamp}>{post.time}</Text>
           </View>
         </View>
@@ -174,11 +193,27 @@ export default function PostCard({ post }: PostCardProps) {
           {comments.length > 0 ? (
             comments.map(comment => (
               <View key={comment.id} style={styles.commentItem}>
-                <View style={styles.commentAvatar}>
-                  <Text style={styles.commentAvatarText}>{comment.username.charAt(0)}</Text>
-                </View>
+                {/* Comment profile picture - show image if available, otherwise fallback to initials */}
+                {comment.profilePicture ? (
+                  <Image 
+                    source={{ uri: comment.profilePicture }} 
+                    style={styles.commentAvatar} 
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View style={styles.commentAvatarFallback}>
+                    <Text style={styles.commentAvatarText}>{comment.username.charAt(0)}</Text>
+                  </View>
+                )}
+                
                 <View style={styles.commentContent}>
-                  <Text style={styles.commentUsername}>{comment.username}</Text>
+                  {/* Show both fullName (if available) and username for comments too */}
+                  <View style={styles.commentHeader}>
+                    {comment.fullName && (
+                      <Text style={styles.commentFullName}>{comment.fullName}</Text>
+                    )}
+                    <Text style={styles.commentUsername}>@{comment.username}</Text>
+                  </View>
                   <Text style={styles.commentBody}>{comment.text}</Text>
                   <Text style={styles.commentTimestamp}>{comment.timestamp}</Text>
                 </View>
@@ -262,9 +297,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
-  userInfoText: {
-    flex: 1,
-  },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -278,6 +310,12 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
+    marginRight: 12,
+  },
+  avatarFallback: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: Theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
@@ -288,14 +326,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  username: {
-    fontWeight: 'bold',
+  fullName: {
     fontSize: 16,
+    fontWeight: 'bold',
     color: Theme.colors.text,
+    marginBottom: 2,
+  },
+  username: {
+    fontSize: 14,
+    color: Theme.colors.gray[500],
   },
   timestamp: {
     fontSize: 12,
     color: Theme.colors.gray[500],
+    marginTop: 2,
   },
   content: {
     marginBottom: 12,
@@ -342,6 +386,12 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
+    marginRight: 8,
+  },
+  commentAvatarFallback: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: Theme.colors.gray[300],
     justifyContent: 'center',
     alignItems: 'center',
@@ -358,13 +408,24 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 10,
   },
-  commentUsername: {
+  commentHeader: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    flexWrap: 'wrap',
+    marginBottom: 2,
+  },
+  commentFullName: {
     fontWeight: 'bold',
     fontSize: 14,
-    marginBottom: 2,
+    marginRight: 6,
+  },
+  commentUsername: {
+    fontSize: 12,
+    color: Theme.colors.gray[500],
   },
   commentBody: {
     fontSize: 14,
+    marginTop: 2,
   },
   commentTimestamp: {
     fontSize: 12,
