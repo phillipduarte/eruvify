@@ -7,7 +7,8 @@ import {
   ScrollView, 
   Animated, 
   Dimensions, 
-  Modal 
+  Modal,
+  Image 
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -15,7 +16,7 @@ import { useAppContext } from '@/hooks/useAppContext';
 import Theme from '@/constants/Theme';
 
 const { width } = Dimensions.get('window');
-const MENU_WIDTH = width * 0.8;
+const MENU_WIDTH = width * 0.7;
 
 type FontAwesomeIconName = React.ComponentProps<typeof FontAwesome>['name'];
 
@@ -82,7 +83,12 @@ export default function MenuOverlay() {
           ]}
         >
           <View style={styles.menuHeader}>
-            <Text style={styles.menuTitle}>Eruvify</Text>
+            <View style={styles.logoContainer}>
+              <Image 
+                source={require('@/assets/images/icon.png')} 
+                style={styles.logo} 
+              />
+            </View>
             <TouchableOpacity style={styles.closeButton} onPress={closeMenu}>
               <FontAwesome name="times" size={22} color={Theme.colors.text} />
             </TouchableOpacity>
@@ -176,17 +182,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: Theme.spacing.md,
-    paddingVertical: Theme.spacing.lg,
+    paddingVertical: Theme.spacing.xl, // Increased vertical padding to accommodate larger logo
     borderBottomWidth: 1,
     borderBottomColor: Theme.colors.border,
   },
-  menuTitle: {
-    fontSize: Theme.typography.fontSize.xl,
-    fontWeight: 'bold',
-    color: Theme.colors.primary,
+  logoContainer: {
+    flex: 1,
+    alignItems: 'center', // Center the logo horizontally
+    marginRight: 30, // Offset the close button width to center properly
+    padding: 0,
+    margin: 0,
   },
-  closeButton: {
-    padding: Theme.spacing.xs,
+  logo: {
+    width: 120, // Increased from 70 to 120
+    height: 100, // Increased from 70 to 120
+    resizeMode: 'contain',
   },
   menuScroll: {
     flex: 1,
