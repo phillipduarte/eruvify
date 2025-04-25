@@ -89,38 +89,19 @@ export default function MenuOverlay() {
           </View>
           
           <ScrollView style={styles.menuScroll}>
-            <MenuItem 
-              icon="home" 
-              label="Home" 
-              route="/(tabs)/" 
-              onPress={closeMenu} 
-            />
-            <MenuItem 
-              icon="map" 
-              label="Map" 
-              route="/(tabs)/map" 
-              onPress={closeMenu} 
-            />
-            <MenuItem 
-              icon="check-circle" 
-              label="Check" 
-              route="/(tabs)/check" 
-              onPress={closeMenu} 
-            />
-            <MenuItem 
-              icon="envelope" 
-              label="Messages" 
-              route="/(tabs)/messages" 
-              onPress={closeMenu} 
-            />
-            <MenuItem 
-              icon="user" 
-              label="Profile" 
-              route="/(tabs)/profile" 
-              onPress={closeMenu} 
-            />
+            {/* Removed redundant navigation items */}
             
-            <View style={styles.divider} />
+            {/* Support & Info Section */}
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => {
+                closeMenu();
+                router.push('/contact' as any);
+              }}
+            >
+              <FontAwesome name="address-book" size={22} color={Theme.colors.primary} style={styles.menuIcon} />
+              <Text style={styles.menuLabel}>Contact</Text>
+            </TouchableOpacity>
             
             <TouchableOpacity 
               style={styles.menuItem}
@@ -132,6 +113,8 @@ export default function MenuOverlay() {
               <FontAwesome name="question-circle" size={22} color={Theme.colors.primary} style={styles.menuIcon} />
               <Text style={styles.menuLabel}>Guide</Text>
             </TouchableOpacity>
+            
+            <View style={styles.divider} />
             
             <TouchableOpacity 
               style={styles.menuItem}

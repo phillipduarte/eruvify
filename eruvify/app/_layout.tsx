@@ -1,6 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
@@ -37,26 +38,28 @@ export default function RootLayout() {
   return (
     <AppProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <View style={{ flex: 1 }}>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="report-issue" options={{ presentation: 'modal' }} />
-            <Stack.Screen name="trip-end" options={{ presentation: 'modal' }} />
-            <Stack.Screen name="route-change" options={{ presentation: 'modal' }} />
-          </Stack>
-          
-          {/* Menu button that appears on all screens */}
-          <MenuButton />
-          
-          {/* Menu overlay that slides in from the left */}
-          <MenuOverlay />
-          
-          {/* Guide popup */}
-          <GuidePopup 
-            isOpen={isGuideOpen}
-            onClose={() => setIsGuideOpen(false)}
-          />
-        </View>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="report-issue" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="trip-end" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="route-change" options={{ presentation: 'modal' }} />
+            </Stack>
+            
+            {/* Menu button that appears on all screens */}
+            <MenuButton />
+            
+            {/* Menu overlay that slides in from the left */}
+            <MenuOverlay />
+            
+            {/* Guide popup */}
+            <GuidePopup 
+              isOpen={isGuideOpen}
+              onClose={() => setIsGuideOpen(false)}
+            />
+          </GestureHandlerRootView>
+        </GestureHandlerRootView>
         <StatusBar style="auto" />
       </ThemeProvider>
     </AppProvider>
