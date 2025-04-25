@@ -42,6 +42,8 @@ export default function RootLayout() {
           <GestureHandlerRootView style={{ flex: 1 }}>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="contact" options={{ headerShown: false }} />
+              <Stack.Screen name="guide" options={{ headerShown: false }} />
               <Stack.Screen name="report-issue" options={{ presentation: 'modal' }} />
               <Stack.Screen name="trip-end" options={{ presentation: 'modal' }} />
               <Stack.Screen name="route-change" options={{ presentation: 'modal' }} />

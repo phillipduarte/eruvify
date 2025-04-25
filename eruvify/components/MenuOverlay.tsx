@@ -107,7 +107,7 @@ export default function MenuOverlay() {
               style={styles.menuItem}
               onPress={() => {
                 closeMenu();
-                // Open guide popup
+                router.push('/guide' as any);
               }}
             >
               <FontAwesome name="question-circle" size={22} color={Theme.colors.primary} style={styles.menuIcon} />
