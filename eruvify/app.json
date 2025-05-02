@@ -59,7 +59,9 @@
           "photosPermission": "The app needs access to your photos to report eruv issues.",
           "cameraPermission": "The app needs access to your camera to take photos of eruv issues."
         }
-      ]
+      ],
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

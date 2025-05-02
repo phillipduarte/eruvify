@@ -150,7 +150,11 @@ export default function TripEndScreen() {
           </View>
           
           <View style={styles.completeContainer}>
-            <FontAwesome name="check-circle" size={80} color={Theme.colors.success} />
+            <Image 
+              source={require('@/assets/images/great-job-star.png')} 
+              style={styles.successIcon}
+              resizeMode="contain"
+            />
             <Text style={styles.completeText}>Great job checking the eruv!</Text>
             <Text style={styles.statsText}>You walked 0.7 miles in 23 minutes.</Text>
           </View>
@@ -250,6 +254,10 @@ const styles = StyleSheet.create({
   completeContainer: {
     alignItems: 'center',
     marginBottom: Theme.spacing.xl,
+  },
+  successIcon: {
+    width: 120,
+    height: 120,
   },
   completeText: {
     fontSize: Theme.typography.fontSize.lg,
