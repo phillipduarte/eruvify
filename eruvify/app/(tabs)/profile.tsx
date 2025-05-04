@@ -52,7 +52,7 @@ export default function ProfileScreen() {
             </View>
             
             <View style={styles.profileDetails}>
-              <Text style={styles.userName}>David Cohen</Text>
+              <Text style={styles.userName}>Current User</Text>
               <Text style={styles.userInfo}>Member since January 2023</Text>
               <Text style={styles.userInfo}>Philadelphia, PA</Text>
             </View>
