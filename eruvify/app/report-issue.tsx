@@ -126,27 +126,32 @@ export default function ReportIssueScreen() {
     // Create a new alert post
     const reportPost = {
       id: Date.now(),
-      username: "Eruv Alert",
+      username: "Current User",
       comment: reportText || "Issue reported with the eruv in this area",
       time: new Date().toLocaleTimeString(),
-      image: imageUri || "https://via.placeholder.com/400x300", // Use selected image if available
-      isAlert: true
+      image: imageUri || "https://via.placeholder.com/400x300",
+      isAlert: true,
+      alertType: 'breakage',
     };
     
     // Add the post to the global state
     addPost(reportPost);
     
-    // Reset the report text and image
+    // Reset the form fields
     setReportText('');
     setImageUri(null);
     
-    // Navigate back
-    router.back();
-    
-    // Navigate to the home screen to see the post
-    setTimeout(() => {
-      router.push('/(tabs)');
-    }, 500);
+    // Show a success message
+    Alert.alert(
+      "Report Submitted",
+      "Thank you for your report! Your check route is paused.",
+      [
+        {
+          text: "Return to Route",
+          onPress: () => router.back()
+        }
+      ]
+    );
   };
   
   return (

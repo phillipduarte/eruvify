@@ -139,7 +139,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // Create a new post object
     const newPost: Post = {
       id: Date.now(),
-      username: 'David Lee',
+      username: 'Current User',
       time: new Date().toLocaleTimeString(),
       comment: comment,
       image: uploadedImage || undefined

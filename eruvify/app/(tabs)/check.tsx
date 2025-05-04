@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
+import { useIsFocused } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import * as Location from 'expo-location';
@@ -462,17 +463,21 @@ export default function CheckScreen() {
   }, [isFinished]);
   
   // Use useFocusEffect instead of useEffect to properly handle focus changes
+  const isFocused = useIsFocused();
+  
   useFocusEffect(
     useCallback(() => {
-      // When screen is focused and we had navigated to report
-      if (navigatedToReport) {
-        console.log("Resetting reporting state after return from report screen");
-        setIsReporting(false);
-        setNavigatedToReport(false);
+      // Only run this when the screen is truly focused AND we had navigated to report
+      if (isFocused && navigatedToReport) {
+        console.log("Check screen is focused after reporting - resuming progress");
         
-        // This will trigger the useEffects to resume progress
+        // Add a small delay to ensure all state updates have completed
+        setTimeout(() => {
+          setIsReporting(false);
+          setNavigatedToReport(false);
+        }, 100);
       }
-    }, [navigatedToReport, setIsReporting])
+    }, [isFocused, navigatedToReport, setIsReporting])
   );
   
   // Handle reporting issue - set state and navigate
