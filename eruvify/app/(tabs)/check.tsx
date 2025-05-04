@@ -75,6 +75,12 @@ export default function CheckScreen() {
   // Add this near your other state variables
   const [localProgressPercent, setLocalProgressPercent] = useState(0);
 
+  // Add these for demo mode
+  const [isDemoMode, setIsDemoMode] = useState(true); // Set to true for presentation
+  const demoTimerRef = useRef(null);
+  const demoPositionIndexRef = useRef(0);
+  const demoPositionsRef = useRef([]);
+
   // Helper function to calculate distance between two coordinates
   const calculateDistance = (coord1, coord2) => {
     const R = 6371e3; // Earth's radius in meters
@@ -200,6 +206,48 @@ export default function CheckScreen() {
     }
   };
 
+  // Function to generate points along the route for demo
+  const generateDemoPoints = (routeCoords, numPoints = 50) => {
+    const points = [];
+    
+    // For each segment of the route
+    for (let i = 0; i < routeCoords.length - 1; i++) {
+      const start = routeCoords[i];
+      const end = routeCoords[i + 1];
+      
+      // Determine how many points to create in this segment
+      // (proportional to segment length)
+      const segmentLength = calculateDistance(start, end);
+      const totalLength = routeCoordinates.reduce((acc, coord, idx) => {
+        if (idx < routeCoords.length - 1) {
+          return acc + calculateDistance(coord, routeCoords[idx + 1]);
+        }
+        return acc;
+      }, 0);
+      
+      const segmentPoints = Math.max(
+        2,
+        Math.round((segmentLength / totalLength) * numPoints)
+      );
+      
+      // Generate points along this segment
+      for (let j = 0; j < segmentPoints; j++) {
+        const fraction = j / (segmentPoints - 1);
+        points.push({
+          latitude: start.latitude + fraction * (end.latitude - start.latitude),
+          longitude: start.longitude + fraction * (end.longitude - start.longitude)
+        });
+      }
+    }
+    
+    // Make sure to include the last point
+    if (points[points.length - 1] !== routeCoords[routeCoords.length - 1]) {
+      points.push(routeCoords[routeCoords.length - 1]);
+    }
+    
+    return points;
+  };
+
   // Request location permissions and get initial location
   useEffect(() => {
     (async () => {
@@ -220,8 +268,8 @@ export default function CheckScreen() {
   
   // Start/stop watching location based on isStarted state
   useEffect(() => {
-    // Start continuous location updates when route is started
-    if (isStarted && locationPermission) {
+    // Only start location tracking in regular mode, not in demo mode, and not when reporting
+    if (isStarted && locationPermission && !isDemoMode && !isReporting) {
       const startLocationTracking = async () => {
         try {
           // Clean up any existing subscription
@@ -240,8 +288,8 @@ export default function CheckScreen() {
               const { coords } = location;
               setUserLocation(coords);
               
-              // Center map on user automatically
-              if (mapRef.current) {
+              // Center map on user automatically ONLY if not in demo mode
+              if (mapRef.current && !isDemoMode) {
                 mapRef.current.animateToRegion({
                   latitude: coords.latitude,
                   longitude: coords.longitude,
@@ -262,9 +310,10 @@ export default function CheckScreen() {
       };
       
       startLocationTracking();
-    } else {
-      // Stop watching location when route is paused/stopped
+    } else if (isReporting || !isStarted) {
+      // Pause location tracking when reporting or not started
       if (locationSubscription.current) {
+        console.log("Pausing location tracking");
         locationSubscription.current.remove();
         locationSubscription.current = null;
       }
@@ -277,7 +326,84 @@ export default function CheckScreen() {
         locationSubscription.current = null;
       }
     };
-  }, [isStarted, locationPermission]);
+  }, [isStarted, locationPermission, isDemoMode, isReporting]);
+
+  // Start demo mode when route is started
+  useEffect(() => {
+    // Only run demo if started, in demo mode, and NOT in reporting mode
+    if (isStarted && isDemoMode && !isReporting) {
+      console.log("Starting or resuming demo timer");
+      
+      // Generate positions along the route if not already generated
+      if (demoPositionsRef.current.length === 0) {
+        demoPositionsRef.current = generateDemoPoints(routeCoordinates, 50);
+      }
+      
+      // Clear any existing timer
+      if (demoTimerRef.current) {
+        clearInterval(demoTimerRef.current);
+      }
+      
+      // Start timer to move along the route
+      demoTimerRef.current = setInterval(() => {
+        const nextIndex = demoPositionIndexRef.current + 1;
+        
+        if (nextIndex >= demoPositionsRef.current.length) {
+          // End of route - clear timer
+          clearInterval(demoTimerRef.current);
+          return;
+        }
+        
+        const nextPosition = demoPositionsRef.current[nextIndex];
+        
+        // Update the simulated user location
+        setUserLocation(nextPosition);
+        
+        // Update route progress with simulated position
+        updateRouteProgress(nextPosition);
+        
+        // Center map on simulated user
+        if (mapRef.current) {
+          mapRef.current.animateToRegion({
+            latitude: nextPosition.latitude,
+            longitude: nextPosition.longitude,
+            latitudeDelta: 0.007,
+            longitudeDelta: 0.007,
+          }, 500);
+        }
+        
+        // Move to next position
+        demoPositionIndexRef.current = nextIndex;
+        
+        // Complete the route at the end
+        if (nextIndex === demoPositionsRef.current.length - 1) {
+          setIsFinished(true);
+        }
+      }, 1000); // Move every second for the demo
+      
+      return () => {
+        if (demoTimerRef.current) {
+          clearInterval(demoTimerRef.current);
+        }
+      };
+    } else if (isReporting) {
+      // Pause timer when reporting
+      if (demoTimerRef.current) {
+        console.log("Pausing demo timer during reporting");
+        clearInterval(demoTimerRef.current);
+        demoTimerRef.current = null;
+      }
+    }
+  }, [isStarted, isDemoMode, isReporting]);
+  
+  // Clean up timer when component unmounts
+  useEffect(() => {
+    return () => {
+      if (demoTimerRef.current) {
+        clearInterval(demoTimerRef.current);
+      }
+    };
+  }, []);
   
   // Function to center the map on user's location
   const centerMapOnUser = () => {
@@ -307,7 +433,25 @@ export default function CheckScreen() {
     setDistanceWalked(0);  // Reset distance walked
     setCompletedCoordinates([]);
     setRemainingCoordinates(routeCoordinates);
-    centerMapOnUser();
+    
+    // If in demo mode, set initial position to start of route
+    if (isDemoMode) {
+      const startPosition = routeCoordinates[0];
+      setUserLocation(startPosition);
+      
+      // Center map on starting position
+      if (mapRef.current) {
+        mapRef.current.animateToRegion({
+          latitude: startPosition.latitude,
+          longitude: startPosition.longitude,
+          latitudeDelta: 0.007,
+          longitudeDelta: 0.007,
+        }, 1000);
+      }
+    } else {
+      // Original behavior - center on actual user
+      centerMapOnUser();
+    }
   };
   
   // Navigate to trip end screen when finished
@@ -325,14 +469,19 @@ export default function CheckScreen() {
         console.log("Resetting reporting state after return from report screen");
         setIsReporting(false);
         setNavigatedToReport(false);
+        
+        // This will trigger the useEffects to resume progress
       }
     }, [navigatedToReport, setIsReporting])
   );
   
   // Handle reporting issue - set state and navigate
   const handleReportIssue = () => {
+    // Pause progress by setting isReporting to true
     setIsReporting(true);
     setNavigatedToReport(true);
+    
+    // Navigate to report screen
     router.push('/report-issue');
   };
 
@@ -352,9 +501,9 @@ export default function CheckScreen() {
           ref={mapRef}
           style={styles.mapImage}
           initialRegion={initialRegion}
-          showsUserLocation={locationPermission}
-          showsMyLocationButton={true}
-          followsUserLocation={isStarted}
+          showsUserLocation={locationPermission && !isDemoMode} // Only show real user location when not in demo mode
+          showsMyLocationButton={!isDemoMode} // Hide the button in demo mode
+          followsUserLocation={isStarted && !isDemoMode} // Only follow user in regular mode
           onMapReady={() => console.log("Map is ready")}
         >
           {/* Draw the completed part of the route */}
@@ -400,6 +549,19 @@ export default function CheckScreen() {
             title="End"
             pinColor="red"
           />
+          
+          {/* Add a custom marker for the demo user when in demo mode */}
+          {isDemoMode && userLocation && (
+            <Marker
+              coordinate={userLocation}
+              title="You"
+              pinColor="blue"
+            >
+              <View style={styles.demoUserMarker}>
+                <FontAwesome name="user" size={16} color="white" />
+              </View>
+            </Marker>
+          )}
         </MapView>
       );
     } catch (error) {
