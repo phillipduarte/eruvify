@@ -751,4 +751,14 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: Theme.spacing.sm,
   },
+  demoUserMarker: {
+    backgroundColor: "#3B82F6", // Blue
+    padding: 2,
+    borderRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 3,
+  },
 });
