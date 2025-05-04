@@ -23,6 +23,7 @@ interface EruvPolygon {
     latitude: number;
     longitude: number;
   }[];
+  color?: string;
 }
 
 export default function MapScreen() {
@@ -46,13 +47,13 @@ export default function MapScreen() {
     },
     { 
       id: 2, 
-      latlng: { latitude: 39.9678, longitude: -75.1939 }, 
+      latlng: { latitude: 39.955603, longitude: -75.189693 }, 
       title: "University City Eruv",
       description: "Covers the university area"
     },
     { 
       id: 3, 
-      latlng: { latitude: 39.9404, longitude: -75.1892 }, 
+      latlng: { latitude: 39.925584, longitude: -75.169437 }, 
       title: "South Philly Eruv",
       description: "Southern neighborhood eruv"
     },
@@ -60,6 +61,32 @@ export default function MapScreen() {
 
   // Update these polygon coordinates for a more accurate representation
   const eruvPolygons: EruvPolygon[] = [
+    {
+      id: 1, // ID for Center City Eruv
+      name: "Center City Eruv",
+      coordinates: [
+        { latitude: 39.942808, longitude: -75.190820 }, // Bottom left corner
+        { latitude: 39.951454, longitude: -75.180753 }, // Bottom left corner
+        { latitude: 39.972307, longitude: -75.175359 }, // Top left corner
+        { latitude: 39.963584, longitude: -75.139645 }, // Top right corner
+        { latitude: 39.933674, longitude: -75.145743 }, // Bottom right corner
+      ],
+      color: '#3BAADB', // Light blue color
+    },
+    {
+      id: 4, // ID for South Philly Eruv
+      name: "South Philly Eruv",
+      coordinates: [
+
+        { latitude: 39.942808, longitude: -75.190820 }, // Bottom left corner
+        // 39.923583, -75.210521
+        { latitude: 39.923583, longitude: -75.210521 }, // Bottom left corner
+        { latitude: 39.914788, longitude: -75.189852 }, // Bottom left corner
+        { latitude: 39.909463, longitude: -75.150162 }, // Bottom left corner
+        { latitude: 39.933674, longitude: -75.145743 }, // Bottom right corner
+      ],
+      color: '#C41E3A', // Dark red color
+    },
     {
       id: 2,
       name: "University City Eruv",
@@ -142,7 +169,10 @@ export default function MapScreen() {
               <Polyline
                 key={polygon.id}
                 coordinates={polygon.coordinates}
-                strokeColor={polygon.id === 3 ? '#e91e63' : '#0056a8'}
+                strokeColor={
+                  polygon.color || 
+                  (polygon.id === 3 ? '#e91e63' : '#0056a8')
+                }
                 strokeWidth={4}
                 closed
               />
@@ -164,8 +194,16 @@ export default function MapScreen() {
           
           <View style={styles.legend}>
             <View style={styles.legendRow}>
+              <View style={[styles.legendMarker, { backgroundColor: '#3BAADB' }]} />
+              <Text style={styles.legendText}>Center City Eruv</Text>
+            </View>
+            <View style={styles.legendRow}>
+              <View style={[styles.legendMarker, { backgroundColor: '#C41E3A' }]} />
+              <Text style={styles.legendText}>South Philly Eruv</Text>
+            </View>
+            <View style={styles.legendRow}>
               <View style={[styles.legendMarker, { backgroundColor: '#0056a8' }]} />
-              <Text style={styles.legendText}>Eruv Boundary</Text>
+              <Text style={styles.legendText}>University City Eruv</Text>
             </View>
             <View style={styles.legendRow}>
               <View style={[styles.legendMarker, { backgroundColor: '#e91e63' }]} />
