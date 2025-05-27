@@ -157,7 +157,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     // Switch to the Home screen
     setActiveScreen('home');
-    router.push('/(tabs)');
+    router.replace('/(tabs)');
   };
 
   // Determine the map placeholder based on progress
