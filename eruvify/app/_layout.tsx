@@ -45,7 +45,7 @@ export default function RootLayout() {
               <Stack.Screen name="contact" options={{ headerShown: false }} />
               <Stack.Screen name="guide" options={{ headerShown: false }} />
               <Stack.Screen name="report-issue" options={{ presentation: 'modal' }} />
-              <Stack.Screen name="trip-end" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="trip-end" options={{ headerShown: false}} />
               <Stack.Screen name="route-change" options={{ presentation: 'modal' }} />
             </Stack>
             

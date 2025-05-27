@@ -458,7 +458,7 @@ export default function CheckScreen() {
   // Navigate to trip end screen when finished
   useEffect(() => {
     if (isFinished) {
-      router.push('/trip-end');
+      router.replace('/trip-end');
     }
   }, [isFinished]);
   
