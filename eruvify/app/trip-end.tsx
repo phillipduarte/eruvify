@@ -141,12 +141,6 @@ export default function TripEndScreen() {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.header}>
             <Text style={styles.title}>Route Completed!</Text>
-            <TouchableOpacity 
-              style={styles.closeButton}
-              onPress={() => router.back()}
-            >
-              <FontAwesome name="times" size={24} color={Theme.colors.gray[700]} />
-            </TouchableOpacity>
           </View>
           
           <View style={styles.completeContainer}>
@@ -212,7 +206,7 @@ export default function TripEndScreen() {
                   // Reset state and go back to home
                   setComment('');
                   setUploadedImage(null);
-                  router.push('/(tabs)');
+                  router.replace('/(tabs)');
                 }}
               >
                 skip this step
