@@ -6,8 +6,12 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Theme from '@/constants/Theme';
+import { useAuth } from '@/context/AuthContext';
 
 export default function ProfileScreen() {
+  // Get auth context
+  const { profile, signOut } = useAuth();
+  
   // Sample data for badges
   const badges = [
     { id: 1, name: 'First Check', icon: 'check-circle' },
@@ -52,7 +56,8 @@ export default function ProfileScreen() {
             </View>
             
             <View style={styles.profileDetails}>
-              <Text style={styles.userName}>Current User</Text>
+                <Text style={styles.userName}>{profile?.full_name || profile?.username || "Current User"}</Text>
+                <Text style={styles.userInfo}>@{profile?.username || "username"}</Text>
               <Text style={styles.userInfo}>Member since January 2023</Text>
               <Text style={styles.userInfo}>Philadelphia, PA</Text>
             </View>
@@ -157,7 +162,7 @@ export default function ProfileScreen() {
           <Button
             title="Sign Out"
             variant="outline"
-            onPress={() => console.log('Sign out')}
+            onPress={() => signOut()}
             style={styles.settingsButton}
           />
         </View>
