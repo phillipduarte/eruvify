@@ -49,6 +49,7 @@ export default function LoginScreen() {
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
+            placeholderTextColor={Theme.colors.gray[500]}
           />
           <TextInput
             style={styles.input}
@@ -57,6 +58,7 @@ export default function LoginScreen() {
             onChangeText={setPassword}
             secureTextEntry
             autoCapitalize="none"
+            placeholderTextColor={Theme.colors.gray[500]}
           />
 
           <TouchableOpacity 

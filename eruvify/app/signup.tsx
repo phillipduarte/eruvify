@@ -60,6 +60,7 @@ export default function SignupScreen() {
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
+            placeholderTextColor={Theme.colors.gray[500]}
           />
           <TextInput
             style={styles.input}
@@ -67,6 +68,7 @@ export default function SignupScreen() {
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
+            placeholderTextColor={Theme.colors.gray[500]}
           />
           <TextInput
             style={styles.input}
@@ -75,6 +77,7 @@ export default function SignupScreen() {
             onChangeText={setPassword}
             secureTextEntry
             autoCapitalize="none"
+            placeholderTextColor={Theme.colors.gray[500]}
           />
           <TextInput
             style={styles.input}
@@ -83,6 +86,7 @@ export default function SignupScreen() {
             onChangeText={setConfirmPassword}
             secureTextEntry
             autoCapitalize="none"
+            placeholderTextColor={Theme.colors.gray[500]}
           />
 
           <TouchableOpacity 
